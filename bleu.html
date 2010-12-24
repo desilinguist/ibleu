@@ -1,0 +1,577 @@
+<html>
+<head>
+<link rel=stylesheet type="text/css" href="bleu.css">
+
+<title>Testing BLEU in Javascript</title>
+<script src="js/bleu.js" type="text/javascript"></script>
+<script src="js/jquery.js" type="text/javascript"></script>
+<script src="js/jquery.flot.js" type="text/javascript"></script>
+<script src="js/utils.js" type="text/javascript"></script>
+</head>
+
+<body>
+<br/>
+<div align="center" id="title" style="font-size: 28px;">Interactive Bleu Scorer</div>
+<br/>
+
+<div align="center" id="formContainer">
+<form id="fileForm" name="fileForm">
+  <p id="srcFileStuff">
+  <span class="fileLabel">Step 0: Pick source XML (Optional)</span><br/><span style="font-size: 14px; line-height: 160%">[If you want Google Translate integration]</span><br/><br/>
+  <input type="file" class="filepicker" name="srcFile" id="srcFile" size="60">
+  </p>
+  <p id="tstFileStuff">
+  <span class="fileLabel">Step 1: Pick hypothesis XML</span><br/><br/>
+  <input type="file" class="filepicker" name="tstFile" id="tstFile" size="60">
+  </p>
+  <p id="refFileStuff">
+  <span class="fileLabel">Step 2: Pick reference XML</span><br/><br/>
+  <input type="file" class="filepicker" name="refFile" id="refFile" size="60">
+  </p>
+  <br/>
+  <input type="checkbox" value="cased" name="caseCheckBox" id="caseCheckBox"/> Preserve case information<br/><br/>
+  <input type="button" value="Score" name="scoreButton" id="scoreButton"/>
+</form>
+<div align="center" id="scoreSpinnerDiv"></div>
+<div class="hider">
+    <a id="formHider" class="jslink" href="#">Hide Form</a>
+</div>
+</div><br/>
+<div align="center" id="bleuDetailContainer">
+    <div align="center" id="bleuScoreDiv">&nbsp;</div><br/>
+    <div align="center" id="bleuTableDiv">&nbsp;</div><br/>
+</div>
+<br/>
+<div align="center" id="bleuDocPlotsContainer"></div>
+<br/>
+<div align="center" id="bleuSegPlotContainer">
+    <div align="center" id="bleuSegPlot" style="width:700px; height:300px"></div>
+</div>
+<br/>
+<div align="center" id="segDetailContainer"></div>
+<br/>
+</body>
+<script type="application/javascript;version=1.8">
+var tstSets = [];
+var refSets = [];
+var srcSets = [];
+var maxN = 4;
+var smoothed = true;
+var scontainer;
+var allDocPlots = [];
+var docidpat = /DocID: (.*) \((.*)\)/;	
+var docidpat2 = /Segment (.*), Document "(.*)"/;
+
+// If you want the tool to remember your Google Translate API key 
+// across sesions, please save it here
+var google_translate_api_key = "";
+
+// Show the given bleu score in the appropriate place
+function showScore(score, prec, brevity, sysid, srclang, numRefSets) {
+    var elt = document.getElementById('bleuScoreDiv');
+	var scorehtml = "<span style=\"font-size: 40px;\">" + (score*100).toFixed(2) + "</span><br/>" +
+        prec.toFixed(4) + " * " + brevity.toFixed(4) + "<br/>" + 
+        "<span style=\"font-size:12px;\">";
+	if (srclang != undefined) {
+		scorehtml += "[Source Language: " + srclang + "]<br/>";
+	}
+	scorehtml += "[System: " + sysid + "]<br/>[" + numRefSets + " reference(s)]</span>";
+	elt.innerHTML = scorehtml;
+}
+
+// Show the details (individual and cumulative) precisions in a table
+function showTable(individualNgramScores, cumulativeNgramScores) {
+	var elt = document.getElementById('bleuTableDiv');
+    elt.innerHTML = "<span style=\"font-size:12px;\">Breakdown of scores (<a href=\"\" class=\"jslink\" id=\"tableHider\">Show</a>)</span><br/>" + 
+                    "<table id=\"bleuTable\" border=1>" + 
+	                 "<tr align=\"center\">" + 
+  	                   "<th>Type</th>" + 
+	                   "<th>1-gram</th>" + 
+	                   "<th>2-gram</th>" + 
+	                   "<th>3-gram</th>" + 
+	                   "<th>4-gram</th>" + 
+	                 "</tr>" + 
+	                 "<tr>" + 
+	                   "<td>Individual</td>" + 
+	                   "<td>" + individualNgramScores[1].toFixed(4) + "</td>" +  
+	                   "<td>" + individualNgramScores[2].toFixed(4) + "</td>" +  
+	                   "<td>" + individualNgramScores[3].toFixed(4) + "</td>" +  
+	                   "<td>" + individualNgramScores[4].toFixed(4) + "</td>" +  
+	                 "</tr>" + 
+                      "<tr>" +
+                       "<td>Cumulative</td>" + 
+	                   "<td>" + cumulativeNgramScores[1].toFixed(4) + "</td>" +  
+	                   "<td>" + cumulativeNgramScores[2].toFixed(4) + "</td>" +  
+	                   "<td>" + cumulativeNgramScores[3].toFixed(4) + "</td>" +  
+	                   "<td>" + cumulativeNgramScores[4].toFixed(4) + "</td>" +  
+	                   "</tr>" + 
+                       "</table>";
+}
+
+function showSegDetails(segnum, docid, bleu, lenratio, lengths) {
+	var elt = document.getElementById('segDetailContainer');
+	var reflens = lengths.slice(1);
+	var tablehtml = '<table border="1" style="margin: 0px auto; width: 700px;">' + 
+					'<tr>' + 
+						'<td align="center" id="segDetailHeader" width="20%">ID</td>' + 
+						'<td align="left" id="segDetailID">Segment ' + (segnum+1) + ', Document "' + docid + '"' + 
+						' [' + bleu + ' BLEU, '+ lenratio + ' Length Ratio]</td>'+
+					'</tr>'; 
+	
+	// Add all the references				
+	for(var i=0; i < refSets.length; i++) {
+		var ref = refSets[i].untokenizedDocuments[docid][segnum];
+		ref = $('#caseCheckBox').attr('checked') ? ref : ref.toLowerCase();
+		tablehtml += '<tr>' + 
+			         '<td align="center" id="segDetailHeader">Reference #' + (i+1) + '</td>' + 
+			         '<td id="segDetailRef' + i + '">' + ref + '</td>' +
+		             '</tr>'; 		
+	}
+	
+	// Add the hypothesis
+	var hyp = tstSets[0].untokenizedDocuments[docid][segnum];
+	hyp = $('#caseCheckBox').attr('checked') ? hyp : hyp.toLowerCase();	
+	tablehtml += '<tr>' + 
+				 '<td align="center" id="segDetailHeader">Hypothesis</td>' + 
+				 '<td id="segDetailHyp">' + hyp + '</td>' + 
+				 '</tr>';
+				
+	// Show a google translate link if there is a source file
+	if (srcSets.length > 0) {
+		tablehtml += '<tr id="segDetailGoogle"><td style="text-align:center; font-size: 14px;" colspan=2><a href="#" class="jslink" id="googleTranslate">What does Google say?</a></td></tr>';
+	}
+	
+	tablehtml += '</table>';
+	elt.innerHTML = tablehtml;
+}
+
+function showTooltip(x, y, contents) {
+    $('<div id="tooltip">' + contents + '</div>').css( {
+        position: 'absolute',
+        display: 'none',
+        top: y - 10,
+        left: x + 10,
+        border: '1px solid #fdd',
+        padding: '2px',
+        'background-color': '#fee',
+        opacity: 0.80
+    }).appendTo("body").fadeIn(200);
+}
+
+function googleTranslate(text) {
+	var newScript = document.createElement('script');
+	var source = "https://www.googleapis.com/language/translate/v2?key=" + window.google_translate_api_key + "&target=en&callback=showTranslation&q=" + text;
+	newScript.src = source;
+	document.getElementsByTagName('head')[0].appendChild(newScript);
+	document.getElementsByTagName('head')[0].removeChild(newScript);
+	newScript = null;					
+}
+
+function showTranslation(response) {
+	var translation = response.data.translations[0].translatedText;
+	var finalTranslation = $('#caseCheckBox').attr('checked') ? translation : translation.toLowerCase();
+	var tdhtml = '<td width="20%" id="segDetailHeader">Google</td>' + 
+				  '<td id="segDetailGoogleTrans">' + finalTranslation + '</td>';
+	$('tr#segDetailGoogle').html(tdhtml);
+}
+
+
+// Create the plot data for all the documents
+function createDocPlotsData(documentScores, segmentScores) {
+    var alld = [];
+    var d = [];
+    var finalalld = [];
+    var docScoreLabels = [];
+    var docIdNumHash = {};
+
+    // Create the labels for each plot (the document scores)
+    var i = 0;
+    for (docid in documentScores) {
+        docScoreLabels[i] = [docid, documentScores[docid].toFixed(2)];
+        docIdNumHash[docid] = i;
+        alld[i] = finalalld[i] = [];
+        i += 1;
+    }
+
+    // Create the data for segment scores for each document plot
+    for (var j=0; j<segmentScores.length; j++) { 
+        var so = segmentScores[j];
+        alld[docIdNumHash[so.docid]].push(so.score);
+    }
+
+    // Now go over each array in alld and add the x axis ticks
+    for (var k=0; k<alld.length; k++) {
+        var xtick = 0;
+        finalalld[k] = alld[k].map(function(item) { xtick += 1; return [xtick, item]; });
+    }
+
+    // Populate the final plot options structs that will be used for each docPlot
+    var options = {
+        series: {stack: 0,
+                 lines: {show: false, steps: false ,},
+                 bars: {show: true, barWidth: 0.4, align: 'center',},
+                 color: '#333333'},
+        //xaxis: {ticks: ticksArray,},
+        xaxis: {ticks: [],},
+        grid: {backgroundColor: { colors: ["#fff", "#eee"] },},
+        yaxis: { min: 0.0, max: 1.0, },
+        legend: { show : false, }, 
+    };
+
+    // return everything
+    return [finalalld, docScoreLabels, options];
+}
+
+function showLargerPlot(smallPlot, segmentScores) { 
+
+    // get the data from the smaller plot
+    var series = smallPlot.getData()[0];
+    var d = series.data;
+    var l = series.label;
+
+	// Set up the ticks array for the larger plot
+	var ticksArray = [];
+	if (d.length < 50) { 
+		for (var j in d) { var tick = parseInt(j) + 1; ticksArray.push([parseInt(tick), tick.toFixed()]); }
+	}
+
+    // set up the data and the options
+    var data = [ { data : d, label : l,} ];
+    var options = {
+        series: {stack: 0,
+                 lines: {show: false, steps: false ,},
+                 bars: {show: true, barWidth: 0.2, align: 'center',},
+                 color: '#243690'},
+        //xaxis: {ticks: [],},
+        xaxis: {ticks: ticksArray,},
+        grid: {backgroundColor: { colors: ["#fff", "#eee"] }, hoverable: true, clickable: true, },
+        yaxis: { min: 0.0, max: 1.0, },
+    };
+
+    $('#bleuSegPlotContainer').show();
+    var largerPlotPlaceHolder = $('#bleuSegPlot');
+    var largerPlot = $.plot(largerPlotPlaceHolder, data, options);
+}
+
+$(document).ready(function() {
+
+    // Clear the file fields on load
+    $(':input','#fileForm')
+      .not(':button')
+      .val('');
+
+    // Clear the checkbox
+    $('#caseCheckBox').attr('checked', false);
+
+    // Hide the bleu details
+    $('#bleuScoreDiv').html("");
+    $('#bleuTableDiv').html("");
+    $('bleuDetailContainer').hide();
+    //$('#bleuDetailContainer').css('border','none');
+
+    // Hide the bleu plots
+	$('#bleuSegPlot').html("");
+    $('#bleuDocPlotsContainer').hide();
+    $('#bleuSegPlotContainer').hide();
+
+	// Clear any stray tooltips 
+	$("#tooltip").remove();
+	
+	// Hide any segment details
+	$('#segDetailContainer').html("");
+
+    // Attach the tooltip callback to the large segment plot
+    var previousPoint = null;
+    $("#bleuSegPlot").bind("plothover", function (event, pos, item) {
+        if (item) {
+            if (previousPoint != item.datapoint) {
+                previousPoint = item.datapoint;
+        
+                $("#tooltip").remove();    
+                showTooltip(item.pageX, item.pageY, item.datapoint[1].toFixed(2));
+            }
+         }
+         else {
+             $("#tooltip").remove();
+             previousPoint = null; 
+         }
+    });
+
+    // Attach the click callback to the large segment plot
+    $("#bleuSegPlot").bind("plotclick", function (event, pos, item) {
+        if (item) {			
+			var segnum = item.dataIndex;
+			var docid = item.series.label.match(docidpat)[1];
+			var bleu = item.datapoint[1].toFixed(2);
+			var lengths = [tstSets[0].documents[docid][segnum].split(" ").length];
+			
+			// Compute average reference length
+			var reflens = refSets.map(function(rset) { return rset.documents[docid][segnum].split(" ").length; });
+			lengths = lengths.concat(reflens);
+			var avgreflen = reflens.reduce(function(a,b) { return a + b; })/reflens.length;
+
+			// Compute the length ratio of the segment length to the average reference length
+			var lenratio = lengths[0]/avgreflen;
+			
+			$('#segDetailContainer').show();
+			showSegDetails(segnum, docid, bleu, lenratio.toFixed(2), lengths);
+            plot.highlight(item.series, item.datapoint);
+	        $('html, body').animate({
+	            scrollTop: $("#segDetailContainer").offset().top 
+	        }, 1000);
+        }
+    });   
+
+    // Initialize the score container
+    scontainer = null;
+
+    // Process the source xml file
+    $('#srcFile').change(function (e) {
+        srcSets = [];
+        var srcfile = e.target.files[0];
+        var reader = new FileReader();
+        reader.onload = function() { 
+            var xml = reader.result;
+            var sset = $('srcset', xml); 
+
+            // Get the set and system ids
+            var srcSet = {};
+            srcSet.setid = sset.attr("setid");
+			srcSet.srclang = sset.attr("srclang");
+            srcSet.documents = {};
+
+            var srcDocs = {};
+            $('doc', xml).each(function (doc) {
+                var docid = $(this).attr("docid");
+                var segs = [];
+                $(this).find("seg").each(function (seg) {
+                    //var segid = $(this).attr("id");
+					segs.push($(this).text());
+                    // segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
+                });
+                srcSet.documents[docid] = segs;
+            });
+            srcSets.push(srcSet);
+        }     
+        reader.readAsText(srcfile); 
+    });
+
+    // Process the system xml file
+    $('#tstFile').change(function (e) {
+        tstSets = [];
+        var tstfile = e.target.files[0];
+        var reader = new FileReader();
+        reader.onload = function() { 
+            var xml = reader.result;
+            var tset = $('tstset', xml); 
+
+            // Get the set and system ids
+            var tstSet = {};
+            tstSet.setid = tset.attr("setid");
+            tstSet.sysid = tset.attr("sysid");
+            tstSet.documents = {};
+			tstSet.untokenizedDocuments = {};
+
+            var tstDocs = {};
+            $('doc', xml).each(function (doc) {
+                var docid = $(this).attr("docid");
+                var segs = [];
+				var originalSegs = [];
+                $(this).find("seg").each(function (seg) {
+                    //var segid = $(this).attr("id");
+                    segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
+					originalSegs.push($(this).text());
+                });
+                tstSet.documents[docid] = segs;
+                tstSet.untokenizedDocuments[docid] = originalSegs;
+            });
+            tstSets.push(tstSet);
+        }     
+
+        reader.readAsText(tstfile); 
+    });
+    $('#refFile').change(function(e) {
+        refSets = [];
+        var reffile = e.target.files[0];
+        var reader = new FileReader();
+        reader.onload = function() { 
+
+            var xml = reader.result;
+
+            // Process each refset
+            $('refset', xml).each(function(refset) { 
+                var rset = {};
+
+                // Get the refid and setid for this refset
+                rset.setid = $(this).attr("setid");
+                rset.refid = $(this).attr("refid");
+                rset.documents = {};
+				rset.untokenizedDocuments = {};
+
+                // Process all docs in each refset
+                $(this).find("doc").each(function(doc) {
+                    var docid = $(this).attr("docid");
+                    var segs = [];
+					var originalSegs = [];
+                    $(this).find("seg").each(function(seg) { 
+                        //var segid = $(this).attr("id");
+                        segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
+						originalSegs.push($(this).text());
+                    });
+                    rset.documents[docid] = segs;
+					rset.untokenizedDocuments[docid] = originalSegs;
+                });
+                refSets.push(rset);
+            });
+        }
+        reader.readAsText(reffile);
+    });
+    $('#scoreButton').click(function(e) {
+        if (tstSets.length > 0 && refSets.length > 0) {
+
+            // First validate the test set against the source set, if the latter is present
+			if ((srcSets.length > 0) && !validateTstAndSrc(tstSets[0], srcSets[0])) {
+				alert("Error: the hypothesis XML and the source XML files do not match up.")
+				return false;
+			}
+			
+			if (!validateTstAndRefs(tstSets[0], refSets)) {
+				alert("Error: the hypothesis XML and one (or more) of the reference XML files do not match up.")
+				return false;
+			}
+						
+
+            // clear everything else
+			$('#bleuSegPlot').html("");
+			$('#bleuDocPlotsContainer').html("");
+		    $('#bleuDocPlotsContainer').hide();
+		    $('#bleuSegPlotContainer').hide();
+		    $("#tooltip").remove();
+			$('#segDetailContainer').html("");
+            allDocPlots = [];
+
+            // Compute the bleu scores
+         	scontainer = scoreSystem(tstSets, refSets);
+		
+            for (sysid in scontainer.bleuObjects) {
+            	var bo = scontainer.bleuObjects[sysid];
+                var score = bo.computeBLEU();
+                var brevity = bo.brevity;
+                var prec = bo.precisions[4];
+				var srclang = srcSets.length > 0 ? srcSets[0].srclang : undefined;
+
+                // Show BLEU details (with details table hidden)
+                showScore(score, prec, brevity, sysid, srclang, refSets.length);
+                showTable(bo.individualNgramScores, bo.cumulativeNgramScores);
+                $('#bleuTable').find('tbody').css('display', 'none');
+                $('#bleuDetailContainer').css('border', '1px solid');
+
+                // build the doc plot strip of plots if there is more
+                // than one document otherwise we don't need to
+                var numDocuments = keys(scontainer.documentScores).length;
+                if ( numDocuments > 0) {
+
+                    // Set the height and width for the container
+                    //$('#bleuDocPlotsContainer').css('width', Math.min(700, numDocuments*210));
+                    $('#bleuDocPlotsContainer').show();
+                    $('#bleuDocPlotsContainer').css('width', 700);
+                    $('#bleuDocPlotsContainer').css('height', 150);
+
+                    // get data for all doc plots together
+                    var docPlotArray = createDocPlotsData(scontainer.documentScores, scontainer.segmentScores, numDocuments);
+                    var docPlotData = docPlotArray[0];
+                    var docPlotLabels = docPlotArray[1];
+                    var docPlotOptions = docPlotArray[2];
+                    var data;
+                    var seriesLabel;
+                    var plotLabel;
+					var idLabel;
+
+                    // Make all the document plots
+                    for (var i=0; i < numDocuments; i++) {
+
+                        // render the plot placeholder
+                        $('#bleuDocPlotsContainer').append('<div id="docPlot' + i +
+                            '"style="width:200px; height:100px; display:inline-block;' + 
+                            'white-space:nowrap;"</div>');
+
+                        // render the plot itself
+                        seriesLabel = 'DocID: ' + docPlotLabels[i][0] + ' (' + docPlotLabels[i][1] + ')';
+                        data = [ { data : docPlotData[i], label : seriesLabel,} ];
+                        plot = $.plot($('#docPlot' + i), data, docPlotOptions);
+
+                        // save a reference to the plot
+                        allDocPlots.push(plot);
+
+                        // Create a non-legend label for the plot
+                        plotLabel = 'Document ' + (i+1) + ' (' + docPlotLabels[i][1] + ')';
+						idLabel = ("00" + i).slice(-3); // pad with two leading zeros
+                        $('#docPlot' + i).append('<span id="docPlotLabel' + i + '" style="font-size: 11px; margin: 0px auto;">' + 
+                                plotLabel + '</span><br/><span style="font-size: 11px; margin: 0px auto;">' + 
+                                ' (<a href="#" class="jslink" id="docPlotExpander' + idLabel + '">enlarge</a>)</span>');
+                    }
+                }
+            }
+        }
+        else {
+            alert('Please load both the hypothesis and reference xml files.');
+        }
+    });
+    $('#caseCheckBox').click(function(e) {
+        if (tstSets.length > 0) {
+        	$('#tstFile').trigger('change');
+        }
+        if (refSets.length > 0) {
+        	$('#refFile').trigger('change');
+        }
+    });
+    $('a#formHider').click(function(e) {
+        e.preventDefault();
+        $('#fileForm').slideToggle();
+        if ($(this).html() == 'Hide Form') {
+            $(this).html('Show Form');
+        }
+        else {
+            $(this).html('Hide Form');
+        }
+    });
+    $('a#tableHider').live('click', function(e) {
+        e.preventDefault();
+        $('#bleuTable').find('tbody').slideToggle();
+        if ($(this).html() == 'Show') {
+            $(this).html('Hide');
+        }
+        else {
+            $(this).html('Show');
+        }
+    });
+    $('a[id^=docPlotExpander]').live('click', function(e) { 
+        e.preventDefault();
+        var plotNumber = $(this).attr('id').slice(-3);
+        var smallerPlot = allDocPlots[parseInt(plotNumber, 10)];
+        showLargerPlot(smallerPlot, scontainer.segmentScores);
+		// clear any segment details
+		$('#segDetailContainer').html("");
+        $('html, body').animate({
+            scrollTop: $("#bleuSegPlotContainer").offset().top 
+        }, 1000);
+    });
+	$('a#googleTranslate').live('click', function(e) {
+		e.preventDefault();
+		if (!window.google_translate_api_key) { 
+			var key = prompt('Please enter your Google Translate API Key which can be freely obtained from Google. It will only be saved for this session. If you wish to permanently save this key, please edit this HTML file directly.');
+			if (key) { window.google_translate_api_key = key; }
+			else { return false; }
+		}			
+		var segdocdata = $('td#segDetailID').html().match(docidpat2);
+		var segnum = parseInt(segdocdata[1])-1;
+		var docid = segdocdata[2];
+		$('tr#segDetailGoogle').html('<td colspan="2" style="text-align: center; font-size: 14px;">Translating ...</td>')
+		googleTranslate(srcSets[0].documents[docid][segnum]);
+        $('html, body').animate({
+            scrollTop: $("tr#segDetailGoogle").offset().top 
+        }, 1000);
+	});
+});
+</script>
+</html>
