@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mteval SYSTEM "ftp://jaguar.ncsl.nist.gov/mt/resources/mteval-xml-v1.5.dtd">
+<mteval>
+<srcset setid="newssyscombtest2010" srclang="French">
+<doc docid="idnes.cz/2009/12/11/76492" genre="nw">
+<hl>
+<seg id="1"> La pénurie de neige en montagne tracasse les hôteliers </seg>
+</hl>
+<p>
+<seg id="2"> Les pistes désertes ne posent pas problème qu&apos;aux exploitants de remonte-pentes. </seg>
+<seg id="3"> Le manque de neige dissuade les gens de réserver leurs séjours au ski dans les hôtels et les pensions. </seg>
+<seg id="4"> De ce fait, il est toujours possible de dénicher des chambres libres pour toutes les dates en hiver, y compris Noël et le Nouvel An. </seg>
+</p>
+<p>
+<seg id="5"> Nous avons beaucoup de visites sur notre site. </seg>
+<seg id="6"> Les internautes parcourent les offres, demandent les prix mais n&apos;osent pas s&apos;engager à réserver pour le moment. </seg>
+<seg id="7"> Et s&apos;ils nous appellent, ils demandent tout de suite s&apos;il y aura de la neige ou de la boue à Noël,&quot; a déclaré Martin Jandura, exploitant du portail d&apos;informations Spindl.Info. </seg>
+</p>
+<p>
+<seg id="8"> Si l&apos;on veut passer le Nouvel An de ses rêves à Špindlerův Mlýn, mieux vaut ne plus trop hésiter à réserver. </seg>
+<seg id="9"> Si l&apos;on donne la priorité aux économies et que la qualité de l&apos;hébergement ne vient qu&apos;ensuite, alors on peut essayer d&apos;attendre encore quelques jours. </seg>
+</p>
+<p>
+<seg id="10"> Les hôteliers de Špindler ne proposent pour l&apos;instant que des séjours d&apos;une semaine pour le Nouvel An. </seg>
+<seg id="11"> Je pense qu&apos;ils vont essayer encore un moment de les placer, mais ils cèderont eux aussi et accepteront des périodes plus courtes. </seg>
+<seg id="12"> Et ensuite le nombre de chambres libres va rapidement diminuer,&quot; a estimé Jandura. </seg>
+</p>
+<p>
+<seg id="13"> L&apos;agence de tourisme Ingtours du Vrchlabí propose aussi encore des lits de libres pour toutes les périodes d&apos;hiver. </seg>
+<seg id="14"> La semaine de Noël nous intéresse le plus pour le moment, elle n&apos;est pas complètement vendue. </seg>
+<seg id="15"> Il reste encore de libre, disons, la moitié des chambres dans notre offre. </seg>
+<seg id="16"> C&apos;est pourquoi nous avons déjà préparé quelques séjours de Noël de dernière minute moins chers,&quot; a indiqué le directeur de Ingtours Petr Schiefert. </seg>
+</p>
+<p>
+<seg id="17"> L&apos;agence de tourisme du Vrchlabí peut également proposer le Nouvel An à Krkonoše, mais il y a moins de places libres. </seg>
+<seg id="18"> Les quatorze premiers jours de Février partent tout aussi bien, les séjours hivernaux restants se vendent moyennement. </seg>
+</p>
+<p>
+<seg id="19"> Cette année, l&apos;intérêt pour les séjours d&apos;hiver a été négativement influencé par le fait qu&apos;il n&apos;y a toujours pas de neige à Krkonoše. </seg>
+<seg id="20"> Les gens attendent qu&apos;elle se mette à tomber. </seg>
+<seg id="21"> Personne ne veut passer l&apos;hiver à la montagne sans neige. </seg>
+<seg id="22"> Si les pistes se recouvrent durant la semaine, Noël aussi sera complet,&quot; pense Schiefert. </seg>
+</p>
+<p>
+<seg id="23"> À l&apos;inverse, l&apos;occupation de l&apos;hôtel Horizont à Pec pod Sněžkou est légèrement supérieure à l&apos;année dernière. </seg>
+<seg id="24"> On a une amélioration d&apos;à peu près cinq pourcent. </seg>
+</p>
+<p>
+<seg id="25"> Il nous reste quelques dernières places pour le Nouvel An comme pour Noël. </seg>
+<seg id="26"> Il y a un grand intérêt durant les vacances de Janvier des polonais et Février se vend bien aussi,&quot; informe Karel Rada, directeur du meilleur hôtel de Pec. </seg>
+</p>
+<p>
+<seg id="27"> L&apos;hôtel Omnia près du parking central de Jánské Lázně est également complet à quatre-vingt pourcent durant la période du Nouvel An. </seg>
+<seg id="28"> Au contraire, la moitié des lits restent vides à Noël dans le plus récent hôtel de Jánské Lázně. </seg>
+<seg id="29"> Cette année, nous avons été agréablement surpris par le mois de Janvier, où nous avons déjà soixante pourcent d&apos;occupation à l&apos;heure actuelle. </seg>
+<seg id="30"> Février est un peu plus faible pour l&apos;instant mais dès que la neige va tomber, l&apos;intérêt pour les séjours dans les Krkonoše grandira encore certainement a indiqué le directeur de l&apos;hôtel Omnia, Erik Sporysch. </seg>
+</p>
+<p>
+<seg id="31"> Les hôteliers des Krkonoše ne doivent toutefois pas espérer davantage de neige. </seg>
+<seg id="32"> Jeudi il fera plus frais et s&apos;il y a des précipitations, elles devraient être neigeuses en montagne. </seg>
+<seg id="33"> Mais par la suite, le temps devrait se réchauffer, informe Jiří Jakubský de la station de Hradec de l&apos;institut hydrométéorologique tchèque. </seg>
+</p>
+</doc>
+<doc docid="lidovky.cz/2009/12/10/75519" genre="nw">
+<hl>
+<seg id="1"> États-Unis : Répétition est mère de sagesse </seg>
+</hl>
+<p>
+<seg id="2"> Il en devient même comique, l&apos;effort assidu avec lequel Barack Obama, président à la réputation de sage, reproduit la stratégie de son prédécesseur sur la question afghane, qu&apos;il considérait lui-même comme bien simple. </seg>
+</p>
+<p>
+<seg id="3"> Quand il a fini par laisser transpirer sa doctrine si ardemment attendue, il s&apos;est avéré qu&apos;il l&apos;avait recopiée au papier carbone depuis le scénario irakien de Bush d&apos;il y a trois ans. </seg>
+<seg id="4"> Non content d&apos;utiliser dans le texte même plusieurs fois l&apos;expression &quot;comme en Irak&quot;, il n&apos;a pas hésité, qui plus est, à utiliser le titre du discours de Bush de Janvier 2007 comme titre de son propre discours : &quot;Une nouvelle route en avant&quot; </seg>
+</p>
+<p>
+<seg id="5"> En même temps, il a personnellement critiqué l&apos;idée de Bush d&apos;envoyer de nouveaux renforts dans un Irak consumé par la guerre civile comme étant &quot;irresponsable et une décision catastrophique dans ses conséquences.&quot; </seg>
+<seg id="6"> Les mois suivants ont toutefois montré que la stratégie de Bush, qui émanait des recommandations des commandants de campagnes, était la seule possible et susceptible de succès à tel point que les journaux à l&apos;heure actuelle ne parlent pas du tout de l&apos;Irak. </seg>
+<seg id="7"> Ceci n&apos;a pas amélioré la réputation de Bush, cela dit, objectivement parlant, il a laissé à son successeur une situation finale bien plus favorable qu&apos;on ne pouvait espérer. </seg>
+<seg id="8"> Barack Obama espère qu&apos;en Afghanistan, le miracle va se reproduire </seg>
+</p>
+<p>
+<seg id="9"> Ce sont à nouveau les commandants de campagnes qui lui ont demandé une augmentation du contingent militaire, notamment le commandant de l&apos;opération afghane, le général Stanley McCristal, qui a même sévèrement critiqué les réticences de la Maison Blanche en dépit des habitudes de subordination. </seg>
+<seg id="10"> Il demandait 40 000 hommes afin de pouvoir rendre la situation plus favorable. </seg>
+<seg id="11"> Le président a hésité pendant trois mois mais à défaut d&apos;une meilleure option, il a au moins escroqué le général de 10 000 soldats. </seg>
+<seg id="12"> Il a réussi à extirper la promesse de 5 000 supplémentaires de la part de l&apos;Europe, même s&apos;il comptait sur 10 000 à l&apos;origine. </seg>
+</p>
+<p>
+<seg id="13"> Ce qui amène le plus de problèmes dans toute la stratégie de Obama paraît être son intention de retirer les armées d&apos;Afghanistan d&apos;ici 18 mois et de terminer tout ce processus d&apos;ici trois ans. Toute la doctrine d&apos;Obama amène davantage de questions qu&apos;elle ne fournit de réponses. </seg>
+<seg id="14"> Beaucoup doutent du fait qu&apos;une augmentation de moitié amènera les mêmes fruits que la progression en Irak. </seg>
+<seg id="15"> En dépit des guerres fratricides de ces dernières années, la société irakienne est relativement bien organisée et ses dirigeants honorent les accords. </seg>
+</p>
+<p>
+<seg id="16"> La situation afghane se démarque par l&apos;exact opposé - on ne peut compter sur personne et aucun traité n&apos;est respecté. </seg>
+<seg id="17"> Dans ces conditions, difficile de préparer des forces de sécurité afghanes, habituées à changer de dirigeant au jour le jour selon ce qui les arrange. </seg>
+<seg id="18"> Les institutions politiques, bien que fondées officiellement, ne resteront que de la poudre aux yeux derrière laquelle vont proliférer les relations ethniques patriarcales. </seg>
+<seg id="19"> Il est singulièrement complexe d&apos;équilibrer les intérêts des divers groupes ethniques compte tenu du manque de clarté quant aux rapports, qui sont encore compliqués par les influences pakistanaises et iraniennes. </seg>
+<seg id="20"> Même la fondation d&apos;un &quot;état prompt à agir&quot;, qui est le but de base de l&apos;opération, ne semble pas être très réel. </seg>
+<seg id="21"> L&apos;horizon temporel de la stratégie d&apos;Obama rend perplexe de par son volontarisme. </seg>
+<seg id="22"> Dans les huit dernières années, la situation en Afghanistan n&apos;a fait qu&apos;empirer et elle est actuellement au bord du chaos. </seg>
+<seg id="23"> Seul un coeur purement romantique et hors de la réalité peut être persuadé que les petits soldats envoyés dans le tumulte de la guerre en vue de leur &quot;prompt retour à la maison&quot; vont amener là un véritable miracle. </seg>
+</p>
+<p>
+<seg id="24"> D&apos;un point de vue politique, définir une date pour le retrait des troupes est purement irresponsable puisque les talibans le considéreront comme l&apos;aveu indirect de la défaite américaine. </seg>
+<seg id="25"> Le dernier sommet de l&apos;OTAN a montré que la volonté des Européens à participer aux opérations militaires en Afghanistan s&apos;oriente vers le négatif. </seg>
+<seg id="26"> Les politiques européens ne savent ni ne veulent pas expliquer à leurs électeurs en quoi la sécurité en Allemagne ou en Italie est liée à une guerre dans les montagnes de l&apos;Hindu Kush. </seg>
+<seg id="27"> Un autre facteur capable d&apos;altérer radicalement la situation est l&apos;évolution des événements liés à l&apos;Iran. </seg>
+<seg id="28"> Si la situation continue à se détériorer et que les sanctions renforcées n&apos;aient pas d&apos;effets sur les iraniens, les américains se retrouveront face à la très difficile question d&apos;une résolution du problème par le recours à la force militaire. </seg>
+<seg id="29"> Il faudra y répondre par exemple au moment où, selon Obama, l&apos;Amérique en viendra au victorieux retrait des troupes d&apos;Afghanistan. </seg>
+</p>
+<p>
+<seg id="30"> Chaque solution de ce type entraînera toutefois un retournement dramatique de la situation afghane. </seg>
+<seg id="31"> La seule rustine pour Obama est le fait qu&apos;il reste trois ans jusqu&apos;aux élections présidentielles et par conséquent il reste encore assez de temps pour qu&apos;il planche sur une nouvelle stratégie, au cas où celle-ci se révèlerait être un fiasco total. </seg>
+</p>
+</doc>
+<doc docid="lidovky.cz/2009/12/10/75501" genre="nw">
+<hl>
+<seg id="1"> Les dirigeants de la banque Goldman Sachs ne recevront plus de primes en argent liquide </seg>
+</hl>
+<p>
+<seg id="2"> Les employés dirigeants haut placés de la banque américaine Goldman Sachs ne recevront plus cette année de primes en espèces. </seg>
+<seg id="3"> La société l&apos;a annoncé pour réagir aux fortes critiques quant à ses pratiques salariales. </seg>
+</p>
+<p>
+<seg id="4"> Le groupe de 30 dirigeants principaux recevra des actions au lieu d&apos;argent, qu&apos;ils ne pourront pas revendre avant cinq ans. </seg>
+<seg id="5"> Les actions pourront être retirées aux dirigeants au cas où ils prendraient trop de risques. </seg>
+</p>
+<p>
+<seg id="6"> D&apos;après Reuters, Goldman Sachs se pose ainsi en tête de file de l&apos;effort visant à relier les rétributions avec des performances à long terme à Wall Street. </seg>
+<seg id="7"> Je suppose que Wall Street est bien conscient du sens global qu&apos;il faut prendre, a indiqué l&apos;ancien banquier d&apos;investissements Douglas Elliott de la société JPMorgan </seg>
+<seg id="8"> Le souci se trouve dans les détails, a-t-il ajouté. </seg>
+</p>
+<p>
+<seg id="9"> La banque Goldman Sachs est devenue la cible de critiques après s&apos;être mis de côté presque 17 milliards de dollars pour des primes sur les trois premiers trimestres de cette année. </seg>
+<seg id="10"> Pour l&apos;année en cours, le montant total des primes dépassera probablement 20 milliards de dollars en dépit de la mesure annoncée aujourd&apos;hui, selon l&apos;agence Reuters. </seg>
+</p>
+<p>
+<seg id="11"> Avec l&apos;arrivée de la crise financière, les fortes primes du secteur bancaire sont devenues un sujet politique sensible dans bon nombre de pays. </seg>
+<seg id="12"> La Grande-Bretagne a annoncé mercredi qu&apos;elle comptait affecter d&apos;une taxe unique de cinquante pourcent les bonus des banquiers dépassant 25.000 livres. </seg>
+<seg id="13"> La France prépare des mesures similaires. </seg>
+</p>
+</doc>
+<doc docid="lidovky.cz/2009/12/10/75493" genre="nw">
+<hl>
+<seg id="1"> Cette année les femmes ont obtenu des prix Nobel dans tous les domaines hormis la physique </seg>
+</hl>
+<p>
+<seg id="2"> Ce sont cinq femmes, un nombre record, qui ont reçu aujourd&apos;hui à Stockholm des mains du roi de Suède Charles XVI Gustave les prix Nobel dans les disciplines techniques et en littérature. </seg>
+<seg id="3"> Outre les quatre scientifiques il y avait aussi l&apos;écrivain allemande d&apos;origine roumaine Herta Müller. </seg>
+</p>
+<p>
+<seg id="4"> Deux biologistes américaines, Elizabeth Blackburn et Carol Greider ont reçu avec leur compatriote Jack Szostak le prix Nobel de médecine pour leur recherche dans le domaine des chromosomes. </seg>
+<seg id="5"> Le prix de chimie a été décerné à l&apos;israélienne Ada Jonath avec les américains Venkatraman Ramakrishnan et Thomas Steitz pour avoir éclairci la structure et la fonction des ribosomes </seg>
+</p>
+<p>
+<seg id="6"> La dernière lauréate a reçu le prix Nobel d&apos;économie, l&apos;américaine Elinor Ostrom avec son compatriote Oliver Williamson, pour leur analyse de la gouvernance économique. </seg>
+</p>
+<p>
+<seg id="7"> La seule discipline technique qui n&apos;a pas eu de lauréate cette année a été la physique. </seg>
+<seg id="8"> Ce prix a été remis aujourd&apos;hui aux scientifiques Charles Kao pour sa recherche dans le domaine des fibres optiques et George Smith avecWillard Boyle pour leur invention des puces CCD, qui sont actuellement à la base de tous les appareils photo numériques, fax ou lunettes astronomiques. </seg>
+</p>
+<p>
+<seg id="9"> Chaque lauréat a reçu le diplôme, la médaille Nobel et le certificat d&apos;acquisition de la récompense pécuniaire. </seg>
+<seg id="10"> Celle-ci atteint dix millions de couronnes suédoises dans chaque catégorie. (environ 1,1 million d&apos;euros) </seg>
+<seg id="11"> Si l&apos;une d&apos;entre elles comporte plusieurs lauréats, ils partageront la récompense entre eux. </seg>
+</p>
+<p>
+<seg id="12"> Le très attendu prix Nobel de la paix a déjà été remis cet après-midi à Oslo en Norvège au président américain Barack Obama. </seg>
+<seg id="13"> Celui-ci, dans son discours, a reconnu la nature controversée de sa récompense puisqu&apos;il n&apos;est qu&apos;au début de son parcours et qu&apos;il est en outre à la tête d&apos;un pays engagé dans deux guerres - en Irak et en Afghanistan. </seg>
+<seg id="14"> À la décharge de sa politique il a ajouté que dans certaines situations la guerre est indispensable pour obtenir la paix, même si le prix en est élevé. </seg>
+</p>
+</doc>
+<doc docid="lidovky.cz/2009/12/10/75487" genre="nw">
+<hl>
+<seg id="1"> Le ministre Janota envisage de démissionner. Klaus l&apos;a invité au Château </seg>
+</hl>
+<p>
+<seg id="2"> Le président Václav Klaus recevra vendredi matin le ministre des finances Eduard Janota, qui pondère son séjour au gouvernement du fait de son désaccord avec le budget de l&apos;État pour l&apos;année prochaine tel qu&apos;il a été votée par la Chambre des députés </seg>
+<seg id="3"> On estime que le budget et peut-être aussi la position de Janota au cabinet seront à l&apos;ordre du jour de leur rendez-vous de vendredi. </seg>
+<seg id="4"> Klaus critique également le budget. </seg>
+<seg id="5"> Selon lui, le déficit est trop important, ce qui creuse davantage la crise des finances publiques. </seg>
+</p>
+<p>
+<seg id="6"> C&apos;est le porte-parole présidentiel Radim Ochvat qui a informé de la réunion. </seg>
+<seg id="7"> Janota veut ensuite discuter de sa fonction lundi avec le premier ministre Jan Fischer. </seg>
+</p>
+<p>
+<seg id="8"> D&apos;après la législation sur le budget qui va être soumis à la signature de Klaus, c&apos;est un déficit de 163 milliards de couronnes que la République Tchèque devrait gérer. </seg>
+<seg id="9"> Néanmoins, la chambre des députés a validé mercredi les propositions de la gauche quant aux transferts d&apos;argent et a augmenté les rétributions des fonctionnaires, du fonctionnement des services sociaux et des versements directs aux agriculteurs. </seg>
+<seg id="10"> Le gouvernement reprochait aux propositions des sociaux démocrates le fait qu&apos;elles allaient augmenter de manière indirecte le déficit du budget. </seg>
+</p>
+<p>
+<seg id="11"> Pour cette raison, un violent désaccord est né entre la gauche d&apos;une part, le gouvernement, Klaus et la droite d&apos;autre part, désaccord qui remet en question l&apos;avenir du cabinet de Fischer qui avait été formé par accord entre l&apos;ODS, le ČSSD et le Parti des verts. </seg>
+<seg id="12"> Les critiques affirment que le budget, tel qu&apos;il a été voté par les députés, supprime le paquet de mesures d&apos;économies passé par le gouvernement de Fischer et qui doit selon lui endiguer l&apos;endettement de l&apos;État. </seg>
+</p>
+<p>
+<seg id="13"> Klaus, qui peut ratifier la loi sur le budget de l&apos;État mais que rien n&apos;y oblige, a déclaré aujourd&apos;hui lors d&apos;un petit-déjeuner de discussions avec des entrepreneurs, que les politiques ont longtemps négligé le &quot;sérieux problème&quot; de la &quot;déficience irréfrénable&quot; des finances publiques. </seg>
+<seg id="14"> À présent il n&apos;y a, selon lui, pas de solution favorable. </seg>
+<seg id="15"> Seul un gouvernement fort pourrait apporter une amélioration, s&apos;il pouvait s&apos;appuyer sur un consensus des partis politiques plus large, selon le président. </seg>
+</p>
+<p>
+<seg id="16"> Le président de l&apos;ODS Mirek Topolánek a indiqué que le budget est effarant et que le gouvernement devrait remettre en cause son existence ultérieure. </seg>
+<seg id="17"> Le vice-président de l&apos;ODS Petr Nečas a déclaré au ČTK que l&apos;idée d&apos;un cabinet administratif soutenu par le ČSSD, l&apos;ODS et les Verts ne fonctionne manifestement plus. </seg>
+<seg id="18"> Dans sa réaction, le premier ministre Fischer a qualifié de telles paroles de &quot;verdicts drastiques&quot;. </seg>
+</p>
+<p>
+<seg id="19"> Le chef du ČSSD Jiří Paroubek a réagi envers Topolánek, disant que le déficit du budget préparé pour cette année par l&apos;ancien gouvernement de Topolánek est effarant et qu&apos;il va dépasser 200 milliards de couronnes. </seg>
+<seg id="20"> Mercredi déjà, le ČSSD a qualifié de succès la ratification du budget de l&apos;État pour la prochaine année. </seg>
+<seg id="21"> Le Parti populaire était également satisfait. </seg>
+</p>
+</doc>
+</srcset>
+</mteval>
