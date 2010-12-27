@@ -490,15 +490,18 @@ $(document).ready(function() {
                     // Make all the document plots
                     for (var i=0; i < numDocuments; i++) {
 
+						// Create a label for the plot
+						idLabel = ("00" + i).slice(-3); // pad with two leading zeros						
+
                         // render the plot placeholder
-                        $('#bleuDocPlotsContainer').append('<div id="docPlot' + i +
+                        $('#bleuDocPlotsContainer').append('<div class="docplot" id="docPlot' + idLabel +
                             '"style="width:200px; height:100px; display:inline-block;' + 
                             'white-space:nowrap;"</div>');
 
                         // render the plot itself
                         seriesLabel = 'DocID: ' + docPlotLabels[i][0] + ' (' + docPlotLabels[i][1] + ')';
                         data = [ { data : docPlotData[i], label : seriesLabel,} ];
-                        plot = $.plot($('#docPlot' + i), data, docPlotOptions);
+                        plot = $.plot($('#docPlot' + idLabel), data, docPlotOptions);
 
                         // save a reference to the plot
                         allDocPlots.push(plot);
@@ -506,9 +509,8 @@ $(document).ready(function() {
                         // Create a non-legend label for the plot
                         plotLabel = 'Document ' + (i+1) + ' (' + docPlotLabels[i][1] + ')';
 						idLabel = ("00" + i).slice(-3); // pad with two leading zeros
-                        $('#docPlot' + i).append('<span id="docPlotLabel' + i + '" style="font-size: 11px; margin: 0px auto;">' + 
-                                plotLabel + '</span><br/><span style="font-size: 11px; margin: 0px auto;">' + 
-                                ' (<a href="#" class="jslink" id="docPlotExpander' + idLabel + '">enlarge</a>)</span>');
+                        $('#docPlot' + idLabel).append('<span id="docPlotLabel' + i + '" style="font-size: 11px; margin: 0px auto;">' + 
+                                plotLabel + '</span>');
                     }
                 }
             }
@@ -545,8 +547,21 @@ $(document).ready(function() {
             $(this).html('Show');
         }
     });
-    $('a[id^=docPlotExpander]').live('click', function(e) { 
-        e.preventDefault();
+
+	// The 'enlarge' link under each doc plot (deactivated for now)
+	
+	//     $('a[id^=docPlotExpander]').live('click', function(e) { 
+	//         e.preventDefault();
+	//         var plotNumber = $(this).attr('id').slice(-3);
+	//         var smallerPlot = allDocPlots[parseInt(plotNumber, 10)];
+	//         showLargerPlot(smallerPlot, scontainer.segmentScores);
+	// // clear any segment details
+	// $('#segDetailContainer').html("");
+	//         $('html, body').animate({
+	//             scrollTop: $("#bleuSegPlotContainer").offset().top 
+	//         }, 1000);
+	//     });
+    $('div[id^=docPlot]').live('click', function(e) {
         var plotNumber = $(this).attr('id').slice(-3);
         var smallerPlot = allDocPlots[parseInt(plotNumber, 10)];
         showLargerPlot(smallerPlot, scontainer.segmentScores);
