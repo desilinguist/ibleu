@@ -6,6 +6,11 @@ function makeSafe(ngram) {
 	return ngram in reserved_words ? '#' + ngram + '#' : ngram;
 }
 
+function floatingRound(num) {
+    return num > 0 ? Math.ceil(num)*100/100 : -Math.ceil(Math.abs(num)*100)/100;
+}
+
+
 
 // Utility funtion to compare whether two arrays are equal
 jQuery.fn.compare = function(other) {
@@ -62,9 +67,9 @@ function validateTstAndRefs(tstSet, refSets) {
 }
 
 // Validate each test set against the source set
-function validateTstAndSrc(srcSet, tstSet) {
+function validateTstAndSrc(tstSet, srcSet) {
 
-    // setid for each refset is the same as the tstset?
+    // setid for the srcset is the same as the tstset?
     var tstSetId = tstSet.setid;
 	var srcSetId = srcSet.setid;
 	var cond1 = tstSetId == srcSetId;
@@ -79,6 +84,31 @@ function validateTstAndSrc(srcSet, tstSet) {
 	var cond2 = hashequal(srcSegNums, tstSegNums);
  
     return cond1 && cond2;
+}
+
+// Validate one test set against the second one
+function validateTstAndOtherTst(tstSet1, tstSet2) {
+
+    // setid for each tstset is the same?
+    var tstSetId1 = tstSet1.setid;
+    var tstSetId2 = tstSet2.setid;
+	var cond1 = tstSetId1 == tstSetId2;
+
+	// however, the sysid for both tstsets should NOT be the same
+	var tstSetSysId1 = tstSet1.sysid;
+	var tstSetSysId2 = tstSet2.sysid;
+	var cond2 = tstSetSysId1 != tstSetSysId2
+	
+    // document ids are the same in both test sets?
+    // AND
+    // number of segments are the same in each document in both sets?
+    var tstSegNums1 = {};
+    for (docid in tstSet1.documents) { tstSegNums1[docid] = tstSet1.documents[docid].length; }
+    var tstSegNums2 = {};
+    for (docid in tstSet2.documents) { tstSegNums2[docid] = tstSet2.documents[docid].length; }
+	var cond3 = hashequal(tstSegNums1, tstSegNums2);
+ 
+    return cond1 && cond2 && cond3;
 }
 
 
