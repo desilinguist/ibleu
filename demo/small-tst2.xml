@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mteval SYSTEM "ftp://jaguar.ncsl.nist.gov/mt/resources/mteval-xml-v1.5.dtd">
 <mteval>
-<tstset setid="newssyscombtest2010" srclang="French" trglang="English" sysid="jhu">
+<tstset setid="newssyscombtest2010" srclang="French" trglang="English" sysid="maryland">
 <doc docid="idnes.cz/2009/12/11/76492" genre="nw">
 <hl>
-<seg id="1"> Lack of snow in mountains causes problems for hoteliers </seg>
+<seg id="1"> The lack of snow  concern the hotel </seg>
 </hl>
 <p>
-<seg id="2"> The trails deserted pose no problem to operators of lifts. </seg>
-<seg id="3"> The lack of snow puts people to book their stays in hotels and pensions. </seg>
-<seg id="4"> Of this, it is still possible to find rooms free for all dates in winter, including Christmas and new year. </seg>
+<seg id="2"> The trails deserted  problem to operators of lifts. </seg>
+<seg id="3"> The lack of snow  book their stays in hotels and pensions. </seg>
+<seg id="4"> Of this, it is still possible  for all dates in winter, including Christmas and new year. </seg>
 </p>
 <p>
-<seg id="5"> We have a lot of visits to our site. </seg>
-<seg id="6"> The Internet travel offers, asking prices but dare not commit to reserve for the moment. </seg>
-<seg id="7"> And if they call, they ask immediately if there will be snow or mud at Christmas, &quot;said Martin Jandura, operator of Spindl.info. information portal </seg>
+<seg id="5"> We have a lot of visits  site. </seg>
+<seg id="6"> The Internet travel offers prices but dare not commit to reserve for the moment. </seg>
+<seg id="7"> And if they call, they ask  there will be snow or mud at Christmas, &quot;said Martin Jandura, operator of Spindl.info. information portal </seg>
 </p>
 <p>
 <seg id="8"> If we want to spend New Year of his dreams to Špindlerův Mlýn, better is no longer hesitate to book. </seg>
@@ -26,19 +26,19 @@
 <seg id="12"> And then the number of rooms free will quickly, &quot;said Jandura. </seg>
 </p>
 <p>
-<seg id="13"> The tourism Ingtours Agency of Vrchlabí also proposes free beds for all periods of winter. </seg>
+<seg id="13"> The tourism Ingtours Agency of  free beds for all periods of winter. </seg>
 <seg id="14"> The week of Christmas we are most concerned for the moment, it is not completely sold. </seg>
-<seg id="15"> There are still free, say, half of the houses in our offer. </seg>
+<seg id="15"> There are still free, say, half  our offer. </seg>
 <seg id="16"> That is why we have already prepared a few last minute Christmas stays cheaper, &quot;said the director of Ingtours Petr Schiefert. </seg>
 </p>
 <p>
-<seg id="17"> The tourism agency of Vrchlabí can also propose new year to Krkonoše, but there are fewer places free. </seg>
+<seg id="17"> The tourism agency of Vrchlabí  new year to Krkonoše, but there are fewer places free. </seg>
 <seg id="18"> The first fourteen days of February go well, the remaining winter trips sell moderately. </seg>
 </p>
 <p>
-<seg id="19"> This year, interest for stays of winter has been negatively influenced by the fact that there is still no snow to Krkonoše. </seg>
+<seg id="19"> This year, interest for  been negatively influenced by the fact that there is still no snow to Krkonoše. </seg>
 <seg id="20"> The people expect that it will start to fall. </seg>
-<seg id="21"> Nobody wants to spend the winter to the mountain without snow. </seg>
+<seg id="21"> Nobody wants to spend the winter untain without snow. </seg>
 <seg id="22"> If the trails cover during the week, Christmas also will be complete, &quot;think Schiefert. </seg>
 </p>
 <p>
@@ -47,12 +47,12 @@
 </p>
 <p>
 <seg id="25"> We still last few places for the new year as for Christmas. </seg>
-<seg id="26"> There is a great interest during the holidays of January of Poles and February is also selling well, &quot;inform Karel Rada, Director of best hotel CI. </seg>
+<seg id="26"> There is a great interest during the holidays of January of selling well, &quot;inform Karel Rada, Director of best hotel CI. </seg>
 </p>
 <p>
 <seg id="27"> The Omnia Hotel near the parking central Jánské Lázně is also full to eighty percent during the new year period. </seg>
-<seg id="28"> On the contrary, half the beds remain empty at Christmas in the most recent Jánské hotel Lázně. </seg>
-<seg id="29"> This year, we have been pleasantly surprised by the month of January, where we already have sixty percent of occupation at the moment. </seg>
+<seg id="28"> On the contrary, half the beds remain empty at Christmas in  Lázně. </seg>
+<seg id="29"> This year, we have been pleasantly , where we already have sixty percent of occupation at the moment. </seg>
 <seg id="30"> February is a little more low at the moment, but as soon as snow will fall, the interest for the Krkonoše still enlarging certainly indicated the Director of the hotel Omnia, Erik Sporysch. </seg>
 </p>
 <p>
@@ -101,9 +101,9 @@
 </p>
 <p>
 <seg id="24"> From a political point of view, fix a date for the withdrawal of troops is purely irresponsible because the Taliban will see us as the indirect admission of defeat. </seg>
-<seg id="25"> The last NATO summit showed that the will of Europeans to participate in military operations in Afghanistan is moving towards the negative. </seg>
+<seg id="25"> The last NATO summit showed that in military operations in Afghanistan is moving towards the negative. </seg>
 <seg id="26"> The European political or do not want to explain to their electorate in what the security in Germany or Italy is linked to a war in the mountains of the Hindu Kush. </seg>
-<seg id="27"> Another factor capable of radically alter the situation is the development of events related to Iran. </seg>
+<seg id="27"> Another factor capable of radically alter of events related to Iran. </seg>
 <seg id="28"> If the situation continues to deteriorate and the reinforced sanctions do not have effects on the Iranians, the Americans find themselves faced with the very difficult issue of a resolution of the problem by the use of military force. </seg>
 <seg id="29"> It must be addressed by example when, according to Obama, America will the victorious withdrawal of troops in Afghanistan. </seg>
 </p>
@@ -125,16 +125,16 @@
 <seg id="5"> The actions can be withdrawn to leaders in cases where they would take too many risks. </seg>
 </p>
 <p>
-<seg id="6"> According to Reuters, Goldman Sachs arises and in leading the effort to link the rewards with long-term performance to Wall Street. </seg>
-<seg id="7"> I assume that Wall Street is well aware of the overall meaning that we need to take, &quot;said the former investment banker Douglas Elliott of JPMorgan </seg>
+<seg id="6"> According to Reuters, Goldman Sachs arises the rewards with long-term performance to Wall Street. </seg>
+<seg id="7"> I assume that Wall Street is well aware need to take, &quot;said the former investment banker Douglas Elliott of JPMorgan </seg>
 <seg id="8"> The concern is in the details, he added. </seg>
 </p>
 <p>
-<seg id="9"> The bank Goldman Sachs has become the target of criticism after set aside almost $17 billion to premiums on the first three quarters of this year. </seg>
+<seg id="9"> The bank Goldman Sachs has after set aside almost $17 billion to premiums on the first three quarters of this year. </seg>
 <seg id="10"> For the current year, the total amount of premiums is likely to exceed $20 billion in despite the announcement today, according to the Reuters news agency. </seg>
 </p>
 <p>
-<seg id="11"> With the arrival of the financial crisis, large bonuses in the banking sector have become a sensitive political issue in many countries. </seg>
+<seg id="11"> With the arrival of the financial crisis, have become a sensitive political issue in many countries. </seg>
 <seg id="12"> The Kingdom announced Wednesday that it intends to affect a single fee of 50% bankers&apos; bonuses exceeding 25,000 books. </seg>
 <seg id="13"> The France preparing similar measures. </seg>
 </p>
@@ -144,7 +144,7 @@
 <seg id="1"> This year the women received the Nobel Prize in all areas except the physical </seg>
 </hl>
 <p>
-<seg id="2"> These are five women, a record number, who have received today in Stockholm at the hands of the King of Sweden Charles XVI Gustave Nobel Prize in technical disciplines and literature. </seg>
+<seg id="2"> These are five women, a record Stockholm at the hands of the King of Sweden Charles XVI Gustave Nobel Prize in technical disciplines and literature. </seg>
 <seg id="3"> Besides the four scientists there was also the German writer of Romanian origin Herta Müller. </seg>
 </p>
 <p>
@@ -185,12 +185,12 @@
 </p>
 <p>
 <seg id="8"> According to the legislation on the budget which will be subject to the signing of Klaus, it is a deficit of crowns 163 billion that the Czech Republic should manage. </seg>
-<seg id="9"> Nevertheless, the Chamber of Deputies approved Wednesday the proposals of the left about transfers of money and has increased the rewards of officials, the operation of social services and direct payments to farmers. </seg>
+<seg id="9"> Nevertheless, the Chamber proposals of the left about transfers of money and has increased the rewards of officials, the operation of social services and direct payments to farmers. </seg>
 <seg id="10"> The government accused proposals of the Social Democrats that they would increase the budget deficit in an indirect way. </seg>
 </p>
 <p>
 <seg id="11"> For this reason, a violent disagreement arose between left on the one hand, the government, Klaus and right on the other hand, disagreement which calls into question the future of Fischer who had been formed by agreement between the ODS, the Čssd and the Green Party. </seg>
-<seg id="12"> The critics claim that the budget, as it has been voted by the members, abolishes the package of savings measures by the Government from Fischer and who must according to stem the indebtedness of the state. </seg>
+<seg id="12"> The critics claim that the budget, as it has been voted package of savings measures by the Government from Fischer and who must according to stem the indebtedness of the state. </seg>
 </p>
 <p>
 <seg id="13"> Klaus, who may ratify the Law on the State budget but that there is no requirement, said today at a breakfast discussion with entrepreneurs, that policies have long neglected the &quot;serious problem&quot; of the &quot;disability Irréfrénable&quot; of public finances. </seg>
@@ -198,12 +198,12 @@
 <seg id="15"> Only a strong government could bring an improvement, if it could rely on a broad consensus among the political parties, according to the president. </seg>
 </p>
 <p>
-<seg id="16"> The President of the ODS Mirek Topolánek has indicated that the budget is staggering and that the government should question its existence. </seg>
+<seg id="16"> The President of the ODS Mirek Topolánek has and that the government should question its existence. </seg>
 <seg id="17"> The Vice-President of the ODS Petr Nečas told the Čtk that the idea of a Cabinet administrative supported by the Čssd, ODS and Greens works clearly more. </seg>
 <seg id="18"> In its response, the Prime Minister Fischer described such words of &apos;verdicts drastic &quot;. </seg>
 </p>
 <p>
-<seg id="19"> The head of Čssd Jiří Paroubek reacted to Topolánek, saying that the budget deficit for this year by the former government of Topolánek is staggering and that it will exceed 200 billion kronor. </seg>
+<seg id="19"> The head of Čssd Jiří Paroubek reacted to deficit for this year by the former government of Topolánek is staggering and that it will exceed 200 billion kronor. </seg>
 <seg id="20"> Wednesday, Čssd described success already the ratification of the state budget for the next year. </seg>
 <seg id="21"> The Popular Party was also pleased. </seg>
 </p>

@@ -22,7 +22,12 @@
   </p>
   <p id="tstFileStuff">
   <span class="fileLabel">Step 1: Pick hypothesis XML</span><br/><br/>
-  <input type="file" class="filepicker" name="tstFile" id="tstFile" size="60">
+  <input type="file" class="filepicker" name="tstFile" id="tstFile" size="60"><br/>
+  <a id="secondHypLink" href="#" style="font-size:12px; display:none;">Compare to another system?</a>
+  <div id="secondHypDiv" name="secondHypDiv" style="display: none;">
+  	<span class="fileLabel">Pick second hypothesis XML</span><br/><br/>
+  	<input type="file" class="filepicker" name="tstFile2" id="tstFile2" size="60"><br/>
+  </div>
   </p>
   <p id="refFileStuff">
   <span class="fileLabel">Step 2: Pick reference XML</span><br/><br/>
@@ -58,7 +63,9 @@ var srcSets = [];
 var maxN = 4;
 var smoothed = true;
 var scontainer;
+var scontainer2;
 var allDocPlots = [];
+var segmentScoreTuples = {};
 var docidpat = /DocID: (.*) \((.*)\)/;	
 var docidpat2 = /Segment (.*), Document "(.*)"/;
 
@@ -78,6 +85,28 @@ function showScore(score, prec, brevity, sysid, srclang, numRefSets) {
 	scorehtml += "[System: " + sysid + "]<br/>[" + numRefSets + " reference(s)]</span>";
 	elt.innerHTML = scorehtml;
 }
+
+// Show two BLEU scores side by side when we are comparing two systems
+function showSideBySideScores(scores, precisions, brevities, sysids, srclang, numRefSets) {
+    var elt = document.getElementById('bleuScoreDiv');
+    var tr1 = "<tr><td style=\"font-size: 40px; text-align: center;\">" +  (scores[0]*100).toFixed(2) + "</td>";
+    tr1 += "<td>&nbsp;&nbsp;&nbsp;vs&nbsp;&nbsp;&nbsp;</td>";
+    tr1 += "<td style=\"font-size: 40px; text-align: center;\">" +  (scores[1]*100).toFixed(2) + "</td></tr>";
+    var tr2 = "<tr><td style=\"text-align: center;\">" + precisions[0].toFixed(4) + " * " + brevities[0].toFixed(4) + "</td>";
+	tr2 += "<td></td>";
+	tr2 += "<td style=\"text-align: center;\">" + precisions[1].toFixed(4) + " * " + brevities[1].toFixed(4) + "</td></tr>";
+    var tr3 = "<tr><td style=\"font-size: 12px; text-align: center;\">" + "[System: " + sysids[0] + "]</td>";
+    tr3 += "<td></td>";
+    tr3 += "<td style=\"font-size: 12px; text-align: center;\">" + "[System: " + sysids[1] + "]</td></tr>";
+    trblank = "<tr><td colspan=\"3\">&nbsp;</td></tr>";
+    tr4 = "<tr><td colspan=\"3\" style=\"text-align: center;\">";
+	if (srclang != undefined) {
+		tr4 += "[Source Language: " + srclang + "]<br/>";
+	}
+	tr4 += "[" + numRefSets + " reference(s)]</tr></td>";
+	elt.innerHTML = "<table>" + tr1 + tr2 + tr3 + trblank + tr4 + "</table>";        
+}
+
 
 // Show the details (individual and cumulative) precisions in a table
 function showTable(individualNgramScores, cumulativeNgramScores) {
@@ -111,30 +140,59 @@ function showTable(individualNgramScores, cumulativeNgramScores) {
 function showSegDetails(segnum, docid, bleu, lenratio, lengths) {
 	var elt = document.getElementById('segDetailContainer');
 	var reflens = lengths.slice(1);
-	var tablehtml = '<table border="1" style="margin: 0px auto; width: 700px;">' + 
-					'<tr>' + 
-						'<td align="center" id="segDetailHeader" width="20%">ID</td>' + 
-						'<td align="left" id="segDetailID">Segment ' + (segnum+1) + ', Document "' + docid + '"' + 
-						' [' + bleu + ' BLEU, '+ lenratio + ' Length Ratio]</td>'+
-					'</tr>'; 
+	if (tstSets[1] != undefined) {
+    	var tablehtml = '<table border="1" style="margin: 0px auto; width: 700px;">' + 
+    					'<tr>' + 
+    						'<td align="center" id="segDetailHeader" width="20%">ID</td>' + 
+    						'<td align="left" id="segDetailID">Segment ' + (segnum+1) + ', Document "' + docid + '"' + 
+    						' [&Delta;<sub>BLEU</sub>=' + bleu + ']</td>' +
+    					'</tr>'; 	    
+	}
+	else {
+    	var tablehtml = '<table border="1" style="margin: 0px auto; width: 700px;">' + 
+    					'<tr>' + 
+    						'<td align="center" id="segDetailHeader" width="20%">ID</td>' + 
+    						'<td align="left" id="segDetailID">Segment ' + (segnum+1) + ', Document "' + docid + '"' + 
+    						' [' + bleu + ' BLEU, '+ lenratio + ' Length Ratio]</td>' +
+    					'</tr>'; 	    
+	}
 	
 	// Add all the references				
 	for(var i=0; i < refSets.length; i++) {
 		var ref = refSets[i].untokenizedDocuments[docid][segnum];
-		ref = $('#caseCheckBox').attr('checked') ? ref : ref.toLowerCase();
+		ref = $('#caseCheckBox').attr('checked') ? ref : ref.toLowerCase();i
 		tablehtml += '<tr>' + 
-			         '<td align="center" id="segDetailHeader">Reference #' + (i+1) + '</td>' + 
+			         '<td align="center" id="segDetailHeader">Reference<br/>(' + refSets[i].refid + ')</td>' + 
 			         '<td id="segDetailRef' + i + '">' + ref + '</td>' +
 		             '</tr>'; 		
 	}
 	
-	// Add the hypothesis
-	var hyp = tstSets[0].untokenizedDocuments[docid][segnum];
-	hyp = $('#caseCheckBox').attr('checked') ? hyp : hyp.toLowerCase();	
-	tablehtml += '<tr>' + 
-				 '<td align="center" id="segDetailHeader">Hypothesis</td>' + 
-				 '<td id="segDetailHyp">' + hyp + '</td>' + 
+	// Add the hypothesis or hypotheses as the case may be
+
+	if (tstSets[1] != undefined) {
+	    var hyp = tstSets[0].untokenizedDocuments[docid][segnum];
+	    hyp = $('#caseCheckBox').attr('checked') ? hyp : hyp.toLowerCase();	
+	    tablehtml += '<tr>' + 
+				 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
+				 '<td id="segDetailHyp">' + hyp + ' (' + segmentScoreTuples[docid][segnum][0].toFixed(2) + ')</td>' + 
 				 '</tr>';
+
+    	hyp = tstSets[1].untokenizedDocuments[docid][segnum];
+    	hyp = $('#caseCheckBox').attr('checked') ? hyp : hyp.toLowerCase();	
+    	tablehtml += '<tr>' + 
+    		     '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[1].sysid + ')</td>' + 
+    			 '<td id="segDetailHyp">' + hyp + ' (' + segmentScoreTuples[docid][segnum][1].toFixed(2) + ')</td>' + 
+    			 '</tr>';	    
+	}
+	else {
+    	var hyp = tstSets[0].untokenizedDocuments[docid][segnum];
+    	hyp = $('#caseCheckBox').attr('checked') ? hyp : hyp.toLowerCase();	
+    	tablehtml += '<tr>' + 
+			 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
+			 '<td id="segDetailHyp">' + hyp + '</td>' + 
+			 '</tr>';
+
+	}
 				
 	// Show a google translate link if there is a source file
 	if (srcSets.length > 0) {
@@ -174,7 +232,6 @@ function showTranslation(response) {
 				  '<td id="segDetailGoogleTrans">' + finalTranslation + '</td>';
 	$('tr#segDetailGoogle').html(tdhtml);
 }
-
 
 // Create the plot data for all the documents
 function createDocPlotsData(documentScores, segmentScores) {
@@ -222,12 +279,125 @@ function createDocPlotsData(documentScores, segmentScores) {
     return [finalalld, docScoreLabels, options];
 }
 
+// Create the plot data for all the documents
+function createDocPlotsDataForComparison(documentScores1, segmentScores1, documentScores2, segmentScores2) {
+
+    var documentScoreDiffs = {};
+    var segmentScoreDiffs = [];
+    var alld = [];
+    var d = [];
+    var finalalld = [];
+    var docScoreLabels = [];
+    var docIdNumHash = {};
+    var maxdiff = 0.0;
+    var mindiff = 0.0;
+
+	// Compute the differences in the document scores ...
+	for (docid in documentScores1) { 
+		documentScoreDiffs[docid] = documentScores1[docid] - documentScores2[docid];
+	}
+
+	// ... and the segment scores
+    for (var j=0; j<segmentScores1.length; j++) {
+        var sd = {}
+        var score1 = segmentScores1[j].score; 
+        var score2 = segmentScores2[j].score; 
+    	var diff =  score1 - score2;    	
+    	if (diff < 0) {
+    	    mindiff = -Math.max(Math.abs(mindiff), Math.abs(diff));
+    	}
+    	else {
+    	    maxdiff = Math.max(maxdiff, diff);
+    	}
+    	sd.diff = diff;
+    	sd.docid = segmentScores1[j].docid;
+    	sd.segnum = segmentScores1[j].segnum;
+    	segmentScoreDiffs.push(sd);
+        if (!segmentScoreTuples[sd.docid]) {
+            segmentScoreTuples[sd.docid] = []
+        }
+        segmentScoreTuples[sd.docid].push([score1, score2]);
+    }
+
+    // Sort the document score diffs by magnitude so that the document with the largest
+    // BLEU delta (negative or positive) shows up first
+    var tuples = [];
+    var sortedDocIDs = [];
+
+    for (var docid in documentScoreDiffs) tuples.push([docid, documentScoreDiffs[docid]]);
+
+    tuples.sort(function(a, b) {
+        a = a[1];
+        b = b[1];
+        return Math.abs(a) < Math.abs(b) ? 1 : (Math.abs(a) > Math.abs(b) ? -1 : 0);
+    });
+
+    for (var i=0; i<tuples.length; i++) {
+        sortedDocIDs.push(tuples[i][0]);
+    }
+	
+    // Create the labels for each plot (the document score differences)
+    var i = 0;
+    var label;
+    // for (docid in documentScoreDiffs) {
+    for (var j=0; j<sortedDocIDs.length; j++) {
+        var docid = sortedDocIDs[j];
+        var diff = documentScoreDiffs[docid];
+        label = diff < 0 ? '-' + diff.toFixed(2) : '+' + diff.toFixed(2);
+        docScoreLabels[i] = [docid, label];
+        docIdNumHash[docid] = i;
+        alld[i] = finalalld[i] = [];
+        i += 1;
+    }
+
+    // Create the data for segment scores for each document plot
+    for (var j=0; j<segmentScoreDiffs.length; j++) { 
+        var sd = segmentScoreDiffs[j]
+        sdnum = sd.diff.toFixed(2);
+        alld[docIdNumHash[sd.docid]].push(sdnum);
+    }
+
+    // Now go over each array in alld and add the x axis ticks
+    for (var k=0; k<alld.length; k++) {
+        var xtick = 0;
+        finalalld[k] = alld[k].map(function(item) { xtick += 1; return [xtick, item]; });
+    }
+    
+    // Pick the larger of maxdiff, mindiff as both ymix and ymax to produce a symmetrical looking plot
+    minmax = Math.max(Math.abs(mindiff), maxdiff);
+    minmax = Math.min(minmax+0.05, 1.0)
+
+    // Populate the final plot options structs that will be used for each docPlot
+    var options = {
+        series: {stack: 0,
+                 lines: {show: false, steps: false ,},
+                 bars: {show: true, barWidth: 0.4, align: 'center',},
+                 color: '#333333'},
+        //xaxis: {ticks: ticksArray,},
+        xaxis: {ticks: [],},
+        grid: {backgroundColor: { colors: ["#fff", "#eee"] },},
+        yaxis: { min: -minmax, max: minmax, },
+        legend: { show : false, }, 
+    };
+
+    // return everything
+    return [finalalld, docScoreLabels, options];
+}
+
 function showLargerPlot(smallPlot, segmentScores) { 
 
     // get the data from the smaller plot
     var series = smallPlot.getData()[0];
     var d = series.data;
     var l = series.label;
+    if (tstSets[1] != undefined) {
+        var ymin = series.yaxis.min;
+        var ymax = series.yaxis.max;
+    }
+    else {
+        var ymin = 0.0;
+        var ymax = 1.0;
+    }
 
 	// Set up the ticks array for the larger plot
 	var ticksArray = [];
@@ -245,7 +415,7 @@ function showLargerPlot(smallPlot, segmentScores) {
         //xaxis: {ticks: [],},
         xaxis: {ticks: ticksArray,},
         grid: {backgroundColor: { colors: ["#fff", "#eee"] }, hoverable: true, clickable: true, },
-        yaxis: { min: 0.0, max: 1.0, },
+        yaxis: { min: ymin, max: ymax, },
     };
 
     $('#bleuSegPlotContainer').show();
@@ -315,15 +485,16 @@ $(document).ready(function() {
 			
 			$('#segDetailContainer').show();
 			showSegDetails(segnum, docid, bleu, lenratio.toFixed(2), lengths);
-            plot.highlight(item.series, item.datapoint);
-	        $('html, body').animate({
-	            scrollTop: $("#segDetailContainer").offset().top 
-	        }, 1000);
+            //plot.highlight(item.series, item.datapoint);
+            $('html, body').animate({
+                scrollTop: $("#segDetailContainer").offset().top 
+            }, 1000);
         }
     });   
 
-    // Initialize the score container
+    // Initialize the score containers
     scontainer = null;
+    scontainer2 = null;
 
     // Process the source xml file
     $('#srcFile').change(function (e) {
@@ -358,7 +529,6 @@ $(document).ready(function() {
 
     // Process the system xml file
     $('#tstFile').change(function (e) {
-        tstSets = [];
         var tstfile = e.target.files[0];
         var reader = new FileReader();
         reader.onload = function() { 
@@ -385,11 +555,42 @@ $(document).ready(function() {
                 tstSet.documents[docid] = segs;
                 tstSet.untokenizedDocuments[docid] = originalSegs;
             });
-            tstSets.push(tstSet);
+            tstSets[0] = tstSet;
         }     
-
-        reader.readAsText(tstfile); 
+        reader.readAsText(tstfile);
+        $('#secondHypLink').css('display', 'inline');
     });
+    $('#tstFile2').change(function (e) {
+        var tstfile = e.target.files[0];
+        var reader = new FileReader();
+        reader.onload = function() { 
+            var xml = reader.result;
+            var tset = $('tstset', xml); 
+
+            // Get the set and system ids
+            var tstSet = {};
+            tstSet.setid = tset.attr("setid");
+            tstSet.sysid = tset.attr("sysid");
+            tstSet.documents = {};
+			tstSet.untokenizedDocuments = {};
+
+            var tstDocs = {};
+            $('doc', xml).each(function (doc) {
+                var docid = $(this).attr("docid");
+                var segs = [];
+				var originalSegs = [];
+                $(this).find("seg").each(function (seg) {
+                    //var segid = $(this).attr("id");
+                    segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
+					originalSegs.push($(this).text());
+                });
+                tstSet.documents[docid] = segs;
+                tstSet.untokenizedDocuments[docid] = originalSegs;
+            });
+            tstSets[1] = tstSet;
+        }     
+        reader.readAsText(tstfile);
+	});
     $('#refFile').change(function(e) {
         refSets = [];
         var reffile = e.target.files[0];
@@ -426,20 +627,45 @@ $(document).ready(function() {
         }
         reader.readAsText(reffile);
     });
+    $('a#secondHypLink').click(function(e) {
+    	e.preventDefault();
+    	$('#secondHypDiv').slideToggle();
+    	$(this).css('display', 'none');
+    });
     $('#scoreButton').click(function(e) {
         if (tstSets.length > 0 && refSets.length > 0) {
 
-            // First validate the test set against the source set, if the latter is present
-			if ((srcSets.length > 0) && !validateTstAndSrc(tstSets[0], srcSets[0])) {
-				alert("Error: the hypothesis XML and the source XML files do not match up.")
-				return false;
+			// validate each test set against the source set, if the latter is present
+			if (srcSets.length > 0) { 
+				for (var i=0; i<tstSets.length; i++) {
+					var tset = tstSets[i];
+					if (tset != undefined) {
+						if (!validateTstAndSrc(tset, srcSets[0])) {
+							alert("Error: the hypothesis XML file (sysid: " + tset.sysid + ") and the source XML file do not match up");
+							return false;
+						}
+					}
+				}
 			}
 			
-			if (!validateTstAndRefs(tstSets[0], refSets)) {
-				alert("Error: the hypothesis XML and one (or more) of the reference XML files do not match up.")
-				return false;
+			// validate each tet set against the reference set
+			for (var i=0; i<tstSets.length; i++) {
+				var tset = tstSets[i];
+				if (tset != undefined) {
+					if (!validateTstAndRefs(tset, refSets)) {
+						alert("Error: the hypothesis XML file (sysid: " + tset.sysid + ") and one (or more) of the reference XML files do not match up");
+						return false;
+					}
+				}
 			}
-						
+		
+			// also validate the two test sets against each other
+			if (tstSets[1] != undefined) {
+				if (!validateTstAndOtherTst(tstSets[0], tstSets[1])) {
+					alert("Error: the hypothesis XMLs do not match up (should have same document IDs, same set IDs but different sys IDs.")
+					return false;
+				}
+			}
 
             // clear everything else
 			$('#bleuSegPlot').html("");
@@ -449,69 +675,102 @@ $(document).ready(function() {
 		    $("#tooltip").remove();
 			$('#segDetailContainer').html("");
             allDocPlots = [];
-
-            // Compute the bleu scores
-         	scontainer = scoreSystem(tstSets, refSets);
-		
+			
+			var scores = [];
+			var brevities = [];
+			var precisions = [];
+			var sysids = [];			
+			var srclang = srcSets.length > 0 ? srcSets[0].srclang : undefined;
+			
+            // Compute the bleu scores for the first system ...
+         	scontainer = scoreSystem(tstSets[0], refSets);
             for (sysid in scontainer.bleuObjects) {
             	var bo = scontainer.bleuObjects[sysid];
-                var score = bo.computeBLEU();
-                var brevity = bo.brevity;
-                var prec = bo.precisions[4];
-				var srclang = srcSets.length > 0 ? srcSets[0].srclang : undefined;
+                scores.push(bo.computeBLEU());
+                brevities.push(bo.brevity);
+                precisions.push(bo.precisions[4]);
+                sysids.push(sysid);
+            }
 
-                // Show BLEU details (with details table hidden)
-                showScore(score, prec, brevity, sysid, srclang, refSets.length);
-                showTable(bo.individualNgramScores, bo.cumulativeNgramScores);
-                $('#bleuTable').find('tbody').css('display', 'none');
-                $('#bleuDetailContainer').css('border', '1px solid');
+         	// .. and the second system, if available
+			if (tstSets[1] != undefined) {
+	        	scontainer2 = scoreSystem(tstSets[1], refSets);
+	        	for (sysid in scontainer2.bleuObjects) {
+            		var bo = scontainer2.bleuObjects[sysid];
+            		scores.push(bo.computeBLEU());
+            		brevities.push(bo.brevity);
+            		precisions.push(bo.precisions[4]);
+            		sysids.push(sysid);
+            	}
+	        }
 
-                // build the doc plot strip of plots if there is more
-                // than one document otherwise we don't need to
-                var numDocuments = keys(scontainer.documentScores).length;
-                if ( numDocuments > 0) {
 
-                    // Set the height and width for the container
-                    //$('#bleuDocPlotsContainer').css('width', Math.min(700, numDocuments*210));
-                    $('#bleuDocPlotsContainer').show();
-                    $('#bleuDocPlotsContainer').css('width', 700);
-                    $('#bleuDocPlotsContainer').css('height', 150);
+            // Show BLEU details (with details table hidden) if there is
+            // only one system but if there are two, then show the scores
+            // side by side and NO table.
+            if (tstSets[1] != undefined) {
+            	showSideBySideScores(scores, precisions, brevities, sysids, srclang, refSets.length);
+            	$('#bleuTableDiv').html('');
+            	$('#bleuDetailContainer').css('border', '1px solid');
+            }
+            else {
+            	showScore(scores[0], precisions[0], brevities[0], sysids[0], srclang, refSets.length);
+            	showTable(bo.individualNgramScores, bo.cumulativeNgramScores);
+            	$('#bleuTable').find('tbody').css('display', 'none');
+            	$('#bleuDetailContainer').css('border', '1px solid');
+            }
 
-                    // get data for all doc plots together
-                    var docPlotArray = createDocPlotsData(scontainer.documentScores, scontainer.segmentScores, numDocuments);
-                    var docPlotData = docPlotArray[0];
-                    var docPlotLabels = docPlotArray[1];
-                    var docPlotOptions = docPlotArray[2];
-                    var data;
-                    var seriesLabel;
-                    var plotLabel;
-					var idLabel;
+            // build the doc plot strip of plots if there is more
+            // than one document otherwise we don't need to
+            var numDocuments = keys(scontainer.documentScores).length;
+            if ( numDocuments > 0) {
 
-                    // Make all the document plots
-                    for (var i=0; i < numDocuments; i++) {
+                // Set the height and width for the container
+                //$('#bleuDocPlotsContainer').css('width', Math.min(700, numDocuments*210));
+                $('#bleuDocPlotsContainer').show();
+                $('#bleuDocPlotsContainer').css('width', 700);
+                $('#bleuDocPlotsContainer').css('height', 150);
 
-						// Create a label for the plot
-						idLabel = ("00" + i).slice(-3); // pad with two leading zeros						
+                // get data for all doc plots together, either as score differences or raw scores 
+                // depending on whether there are 1 or 2 systems
+                if (tstSets[1] != undefined) {
+                	var docPlotArray = createDocPlotsDataForComparison(scontainer.documentScores, scontainer.segmentScores, scontainer2.documentScores, scontainer2.segmentScores, numDocuments);
+                }
+                else {
+                	var docPlotArray = createDocPlotsData(scontainer.documentScores, scontainer.segmentScores, numDocuments);
+                }
+                var docPlotData = docPlotArray[0];
+                var docPlotLabels = docPlotArray[1];
+                var docPlotOptions = docPlotArray[2];
+                
+                var data;
+                var seriesLabel;
+                var plotLabel;
+				var idLabel;
 
-                        // render the plot placeholder
-                        $('#bleuDocPlotsContainer').append('<div class="docplot" id="docPlot' + idLabel +
-                            '"style="width:200px; height:100px; display:inline-block;' + 
-                            'white-space:nowrap;"</div>');
+                // Make all the document plots
+                for (var i=0; i < numDocuments; i++) {
 
-                        // render the plot itself
-                        seriesLabel = 'DocID: ' + docPlotLabels[i][0] + ' (' + docPlotLabels[i][1] + ')';
-                        data = [ { data : docPlotData[i], label : seriesLabel,} ];
-                        plot = $.plot($('#docPlot' + idLabel), data, docPlotOptions);
+					// Create a label for the plot
+					idLabel = ("00" + i).slice(-3); // pad with two leading zeros
 
-                        // save a reference to the plot
-                        allDocPlots.push(plot);
+                    // render the plot placeholder
+                    $('#bleuDocPlotsContainer').append('<div class="docplot" id="docPlot' + idLabel +
+                        '"style="width:200px; height:100px; display:inline-block;' + 
+                        'white-space:nowrap;"</div>');
 
-                        // Create a non-legend label for the plot
-                        plotLabel = 'Document ' + (i+1) + ' (' + docPlotLabels[i][1] + ')';
-						idLabel = ("00" + i).slice(-3); // pad with two leading zeros
-                        $('#docPlot' + idLabel).append('<span id="docPlotLabel' + i + '" style="font-size: 11px; margin: 0px auto;">' + 
-                                plotLabel + '</span>');
-                    }
+                    // render the plot itself
+                    seriesLabel = 'DocID: ' + docPlotLabels[i][0] + ' (' + docPlotLabels[i][1] + ')';
+                    data = [ { data : docPlotData[i], label : seriesLabel,} ];
+                    plot = $.plot($('#docPlot' + idLabel), data, docPlotOptions);
+
+                    // save a reference to the plot
+                    allDocPlots.push(plot);
+
+                    // Create a non-legend label for the plot
+                    plotLabel = 'Document ' + (i+1) + ' (' + docPlotLabels[i][1] + ')';
+					idLabel = ("00" + i).slice(-3); // pad with two leading zeros
+                    $('#docPlot' + idLabel).append('<span id="docPlotLabel' + i + '" style="font-size: 11px; margin: 0px auto;">' + plotLabel + '</span>');
                 }
             }
         }
@@ -520,8 +779,19 @@ $(document).ready(function() {
         }
     });
     $('#caseCheckBox').click(function(e) {
+        
+        // Store the previous state of the compare link
+        var prevLinkValue = $('a#secondHypLink').css('display');
+
         if (tstSets.length > 0) {
         	$('#tstFile').trigger('change');
+        	
+        	if (tstSets[1] != undefined) {
+        	    $('#tstFile2').trigger('change');        	
+        	}
+        	        	
+        	// Make sure that the compare link retains its state
+        	$('a#secondHypLink').css('display', prevLinkValue);        	
         }
         if (refSets.length > 0) {
         	$('#refFile').trigger('change');
@@ -539,7 +809,7 @@ $(document).ready(function() {
     });
     $('a#tableHider').live('click', function(e) {
         e.preventDefault();
-        $('#bleuTable').find('tbody').slideToggle();
+        $('#bleuTable').find('tbody').toggle();
         if ($(this).html() == 'Show') {
             $(this).html('Hide');
         }
@@ -548,19 +818,6 @@ $(document).ready(function() {
         }
     });
 
-	// The 'enlarge' link under each doc plot (deactivated for now)
-	
-	//     $('a[id^=docPlotExpander]').live('click', function(e) { 
-	//         e.preventDefault();
-	//         var plotNumber = $(this).attr('id').slice(-3);
-	//         var smallerPlot = allDocPlots[parseInt(plotNumber, 10)];
-	//         showLargerPlot(smallerPlot, scontainer.segmentScores);
-	// // clear any segment details
-	// $('#segDetailContainer').html("");
-	//         $('html, body').animate({
-	//             scrollTop: $("#bleuSegPlotContainer").offset().top 
-	//         }, 1000);
-	//     });
     $('div[id^=docPlot]').live('click', function(e) {
         var plotNumber = $(this).attr('id').slice(-3);
         var smallerPlot = allDocPlots[parseInt(plotNumber, 10)];

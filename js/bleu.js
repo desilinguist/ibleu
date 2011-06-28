@@ -271,29 +271,23 @@ function scoreDocument(docid, tstDoc, refDocs, sysBleuObj, sContainer) {
     docBleuObj = null;
 }
 
-function scoreSystem(tstSets, refSets) {
+function scoreSystem(tstSet, refSets) {
 
-    // Create a new score container
-    var sContainer = new scoreContainer();
+	// Create a new score container
+	var sContainer = new scoreContainer();
 
-    // Score each test set against all refsets, i.e.
-    // create a bleuScoreObject for each tstSet
-    for (var i=0; i < tstSets.length; i++) { 
-        var tstSet = tstSets[i];
+    // Score the test set against all refsets by  creating a bleuScoreObject for the test set
+    var sysBleuObj = new bleuScoreObject(maxN, true);
 
-        // Create a new bleuScoreObjects for this test set
-        var sysBleuObj = new bleuScoreObject(maxN, true);
-
-        // Now score each document and accumulate stats into the bleu object
-        for (var docid in tstSet.documents) {
-            var tstDoc = tstSet.documents[docid];
-            var refDocs = refSets.map(function(rset) { return rset.documents[docid]; });
-            scoreDocument(docid, tstDoc, refDocs, sysBleuObj, sContainer);
-        }
-
-        // Save this bleuObject
-        sContainer.bleuObjects[tstSet.sysid] = sysBleuObj;
+    // Now score each document and accumulate stats into the bleu object
+    for (var docid in tstSet.documents) {
+        var tstDoc = tstSet.documents[docid];
+        var refDocs = refSets.map(function(rset) { return rset.documents[docid]; });
+        scoreDocument(docid, tstDoc, refDocs, sysBleuObj, sContainer);
     }
+
+    // Save this bleuObject
+    sContainer.bleuObjects[tstSet.sysid] = sysBleuObj;
 
     return sContainer;
 }
