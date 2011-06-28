@@ -174,14 +174,14 @@ function showSegDetails(segnum, docid, bleu, lenratio, lengths) {
 	    hyp = $('#caseCheckBox').attr('checked') ? hyp : hyp.toLowerCase();	
 	    tablehtml += '<tr>' + 
 				 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
-				 '<td id="segDetailHyp">' + hyp + ' (' + segmentScoreTuples[docid][segnum][0].toFixed(2) + ')</td>' + 
+				 '<td id="segDetailHyp">' + hyp + '<span style="font-size: 10px;"> [' + segmentScoreTuples[docid][segnum][0].toFixed(2) + ']</span></td>' + 
 				 '</tr>';
 
     	hyp = tstSets[1].untokenizedDocuments[docid][segnum];
     	hyp = $('#caseCheckBox').attr('checked') ? hyp : hyp.toLowerCase();	
     	tablehtml += '<tr>' + 
     		     '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[1].sysid + ')</td>' + 
-    			 '<td id="segDetailHyp">' + hyp + ' (' + segmentScoreTuples[docid][segnum][1].toFixed(2) + ')</td>' + 
+    			 '<td id="segDetailHyp">' + hyp + '<span style="font-size: 10px;"> [' + segmentScoreTuples[docid][segnum][1].toFixed(2) + ']</span></td>' + 
     			 '</tr>';	    
 	}
 	else {
@@ -343,7 +343,7 @@ function createDocPlotsDataForComparison(documentScores1, segmentScores1, docume
     for (var j=0; j<sortedDocIDs.length; j++) {
         var docid = sortedDocIDs[j];
         var diff = documentScoreDiffs[docid];
-        label = diff < 0 ? '-' + diff.toFixed(2) : '+' + diff.toFixed(2);
+        label = diff < 0 ? diff.toFixed(2) : '+' + diff.toFixed(2);
         docScoreLabels[i] = [docid, label];
         docIdNumHash[docid] = i;
         alld[i] = finalalld[i] = [];
