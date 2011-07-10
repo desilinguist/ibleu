@@ -1,5 +1,7 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <link rel=stylesheet type="text/css" href="bleu.css">
 
 <title>Testing BLEU in Javascript</title>
@@ -17,7 +19,8 @@
 <div align="center" id="formContainer">
 <form id="fileForm" name="fileForm">
   <p id="srcFileStuff">
-  <span class="fileLabel">Step 0: Pick source XML (Optional)</span><br/><span style="font-size: 14px; line-height: 160%">[If you want Google Translate integration]</span><br/><br/>
+  <span class="fileLabel">Step 0: Pick source XML (Optional)</span><br/><br/>
+  <!-- <span style="font-size: 14px; line-height: 160%">[If you want Google Translate integration]</span> -->
   <input type="file" class="filepicker" name="srcFile" id="srcFile" size="60">
   </p>
   <p id="tstFileStuff">
@@ -34,7 +37,17 @@
   <input type="file" class="filepicker" name="refFile" id="refFile" size="60">
   </p>
   <br/>
-  <input type="checkbox" value="cased" name="caseCheckBox" id="caseCheckBox"/> Preserve case information<br/><br/>
+  <table border="0">
+    <tr>
+      <td align="center"><input type="checkbox" value="cased" name="caseCheckBox" id="caseCheckBox"/> Preserve case information</td></tr>
+      <tr><td>&nbsp;</td></tr>
+      <tr><td>Compare to:
+      <input type="radio" name="comparisonEngine" value="Google" id="comparisonEngine1" /> Google Translate
+      <input type="radio" name="comparisonEngine" value="Bing" id="comparisonEngine2"/> Bing Translator
+      <input type="radio" name="comparisonEngine" value="none" id="comparisonEngine3" /> None</td>
+    </tr>
+  </table>
+  <br/>
   <input type="button" value="Score" name="scoreButton" id="scoreButton"/>
 </form>
 <div align="center" id="scoreSpinnerDiv"></div>
@@ -69,9 +82,22 @@ var segmentScoreTuples = {};
 var docidpat = /DocID: (.*) \((.*)\)/;	
 var docidpat2 = /Segment (.*), Document "(.*)"/;
 
+// Create a hash that will give us the two letter code for any language
+var languageNameHash = new Array();
+languageNameHash['French'] = 'fr';
+languageNameHash['Chinese'] = 'zh';
+languageNameHash['German'] = 'de';
+languageNameHash['Spanish'] = 'es';
+languageNameHash['Arabic'] = 'ar';
+languageNameHash['English'] = 'en';
+
 // If you want the tool to remember your Google Translate API key 
 // across sesions, please save it here
 var google_translate_api_key = "";
+
+// If you want the tool to remember your Microsoft Translator API key
+// across sessions, please save it here
+var bing_translate_api_key = "";
 
 // Show the given bleu score in the appropriate place
 function showScore(score, prec, brevity, sysid, srclang, numRefSets) {
@@ -157,6 +183,15 @@ function showSegDetails(segnum, docid, bleu, lenratio, lengths) {
     					'</tr>'; 	    
 	}
 	
+    // Add the source sentence, if availble
+    if (srcSets.length > 0) {
+        var src = srcSets[0].documents[docid][segnum];
+        tablehtml += '<tr>' + 
+                     '<td align="center" id="segDetailHeader">Source</td>' + 
+                     '<td id="segDetailSrc">' + src + '</td>' +
+                     '</tr>';               
+    }
+
 	// Add all the references				
 	for(var i=0; i < refSets.length; i++) {
 		var ref = refSets[i].untokenizedDocuments[docid][segnum];
@@ -174,14 +209,14 @@ function showSegDetails(segnum, docid, bleu, lenratio, lengths) {
 	    hyp = $('#caseCheckBox').attr('checked') ? hyp : hyp.toLowerCase();	
 	    tablehtml += '<tr>' + 
 				 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
-				 '<td id="segDetailHyp">' + hyp + '<span style="font-size: 10px;"> [' + segmentScoreTuples[docid][segnum][0].toFixed(2) + ']</span></td>' + 
+				 '<td id="segDetailHyp">' + hyp + '<span style="font-size: 11px;"> [' + segmentScoreTuples[docid][segnum][0].toFixed(2) + ']</span></td>' + 
 				 '</tr>';
 
     	hyp = tstSets[1].untokenizedDocuments[docid][segnum];
     	hyp = $('#caseCheckBox').attr('checked') ? hyp : hyp.toLowerCase();	
     	tablehtml += '<tr>' + 
     		     '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[1].sysid + ')</td>' + 
-    			 '<td id="segDetailHyp">' + hyp + '<span style="font-size: 10px;"> [' + segmentScoreTuples[docid][segnum][1].toFixed(2) + ']</span></td>' + 
+    			 '<td id="segDetailHyp">' + hyp + '<span style="font-size: 11px;"> [' + segmentScoreTuples[docid][segnum][1].toFixed(2) + ']</span></td>' + 
     			 '</tr>';	    
 	}
 	else {
@@ -196,7 +231,10 @@ function showSegDetails(segnum, docid, bleu, lenratio, lengths) {
 				
 	// Show a google translate link if there is a source file
 	if (srcSets.length > 0) {
-		tablehtml += '<tr id="segDetailGoogle"><td style="text-align:center; font-size: 14px;" colspan=2><a href="#" class="jslink" id="googleTranslate">What does Google say?</a></td></tr>';
+        var engineName = $('input[name=comparisonEngine]:checked').val();
+        if (engineName != "none") {
+            tablehtml += '<tr id="segDetailEngine"><td style="text-align:center; font-size: 14px;" colspan=2><a href="#" class="jslink" id="engineTranslate">What does ' + engineName + ' say?</a></td></tr>';
+        }
 	}
 	
 	tablehtml += '</table>';
@@ -218,19 +256,36 @@ function showTooltip(x, y, contents) {
 
 function googleTranslate(text) {
 	var newScript = document.createElement('script');
-	var source = "https://www.googleapis.com/language/translate/v2?key=" + window.google_translate_api_key + "&target=en&callback=showTranslation&q=" + text;
+	var source = "https://www.googleapis.com/language/translate/v2?key=" + window.google_translate_api_key + "&target=en&callback=showGoogleTranslation&q=" + text;
 	newScript.src = source;
 	document.getElementsByTagName('head')[0].appendChild(newScript);
 	document.getElementsByTagName('head')[0].removeChild(newScript);
 	newScript = null;					
 }
 
-function showTranslation(response) {
-	var translation = response.data.translations[0].translatedText;
-	var finalTranslation = $('#caseCheckBox').attr('checked') ? translation : translation.toLowerCase();
-	var tdhtml = '<td width="20%" id="segDetailHeader">Google</td>' + 
-				  '<td id="segDetailGoogleTrans">' + finalTranslation + '</td>';
-	$('tr#segDetailGoogle').html(tdhtml);
+function bingTranslate(text, srclang) {        
+    var newScript = document.createElement('script');
+    var source = "http://api.microsofttranslator.com/V2/Ajax.svc/Translate?oncomplete=showBingTranslation&contentType=text/html&appId=" + window.bing_translate_api_key + "&from=" + languageNameHash[srclang] + "&to=en&text=" + text;
+    newScript.src = source;
+    document.getElementsByTagName('head')[0].appendChild(newScript);
+    document.getElementsByTagName('head')[0].removeChild(newScript);
+    newScript = null;                   
+}
+
+function showBingTranslation(response) {
+    var translation = response;
+    var finalTranslation = $('#caseCheckBox').attr('checked') ? translation : translation.toLowerCase();
+    var tdhtml = '<td width="20%" id="segDetailHeader">Bing</td>' + 
+                  '<td id="segDetailEngineTrans">' + finalTranslation + '</td>';
+    $('tr#segDetailEngine').html(tdhtml);
+}
+
+function showGoogleTranslation(response) {
+    var translation = response.data.translations[0].translatedText;
+    var finalTranslation = $('#caseCheckBox').attr('checked') ? translation : translation.toLowerCase();
+    var tdhtml = '<td width="20%" id="segDetailHeader">Google</td>' + 
+                  '<td id="segDetailEngineTrans">' + finalTranslation + '</td>';
+    $('tr#segDetailEngine').html(tdhtml);
 }
 
 // Create the plot data for all the documents
@@ -428,10 +483,16 @@ $(document).ready(function() {
     // Clear the file fields on load
     $(':input','#fileForm')
       .not(':button')
+      .not(':radio')
       .val('');
 
     // Clear the checkbox
     $('#caseCheckBox').attr('checked', false);
+
+    // Set the radio buttons to 'none' by default and disable the other two
+    $('input[name=comparisonEngine]').filter('#comparisonEngine1').attr('disabled', 'disabled')
+    $('input[name=comparisonEngine]').filter('#comparisonEngine2').attr('disabled', 'disabled')
+    $('input[name=comparisonEngine]').filter('#comparisonEngine3').attr('checked', 'checked')
 
     // Hide the bleu details
     $('#bleuScoreDiv').html("");
@@ -523,8 +584,14 @@ $(document).ready(function() {
                 srcSet.documents[docid] = segs;
             });
             srcSets.push(srcSet);
+
+            // Enable the Bing/Google radio buttons if the source file has been parsed successfully
+            if (srcSets.length > 0) {
+                $('input[name=comparisonEngine]').filter('#comparisonEngine1').removeAttr('disabled');
+                $('input[name=comparisonEngine]').filter('#comparisonEngine2').removeAttr('disabled');
+            }    
         }     
-        reader.readAsText(srcfile); 
+        reader.readAsText(srcfile);
     });
 
     // Process the system xml file
@@ -828,20 +895,35 @@ $(document).ready(function() {
             scrollTop: $("#bleuSegPlotContainer").offset().top 
         }, 1000);
     });
-	$('a#googleTranslate').live('click', function(e) {
+	$('a#engineTranslate').live('click', function(e) {
 		e.preventDefault();
-		if (!window.google_translate_api_key) { 
-			var key = prompt('Please enter your Google Translate API Key which can be freely obtained from Google. It will only be saved for this session. If you wish to permanently save this key, please edit this HTML file directly.');
-			if (key) { window.google_translate_api_key = key; }
-			else { return false; }
-		}			
+        var engineName = $('input[name=comparisonEngine]:checked').val();
+        if (engineName == "Google") {
+            if (!window.google_translate_api_key) { 
+                var key = prompt('Please enter your Google Translate API Key which can be freely obtained from Google. It will only be saved for this session. If you wish to permanently save this key, please edit this HTML file directly.');
+                if (key) { window.google_translate_api_key = key; }
+                else { return false; }
+            }                       
+        }
+		else {
+            if (!window.bing_translate_api_key) { 
+    			var key = prompt('Please enter your Bing Translate API Key which can be freely obtained from Microsoft. It will only be saved for this session. If you wish to permanently save this key, please edit this HTML file directly.');
+    			if (key) { window.bing_translate_api_key = key; }
+    			else { return false; }
+    		}
+        }
 		var segdocdata = $('td#segDetailID').html().match(docidpat2);
 		var segnum = parseInt(segdocdata[1])-1;
 		var docid = segdocdata[2];
-		$('tr#segDetailGoogle').html('<td colspan="2" style="text-align: center; font-size: 14px;">Translating ...</td>')
-		googleTranslate(srcSets[0].documents[docid][segnum]);
+		$('tr#segDetailEngine').html('<td colspan="2" style="text-align: center; font-size: 14px;">Translating ...</td>')
+        if (engineName == "Google") {
+		  googleTranslate(srcSets[0].documents[docid][segnum]);
+        }
+        else {
+            bingTranslate(srcSets[0].documents[docid][segnum], srcSets[0].srclang);
+        }
         $('html, body').animate({
-            scrollTop: $("tr#segDetailGoogle").offset().top 
+            scrollTop: $("tr#segDetailEngine").offset().top 
         }, 1000);
 	});
 });
