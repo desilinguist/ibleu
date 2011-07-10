@@ -63,7 +63,7 @@ td#segDetailHeader {
 	text-align: center;
 }
 
-td#segDetailID, td#segDetailRef0, td#segDetailRef1, td#segDetailRef2, td#segDetailRef3, td#segDetailHyp, td#segDetailGoogleTrans {
+td#segDetailID, td#segDetailRef0, td#segDetailRef1, td#segDetailRef2, td#segDetailRef3, td#segDetailHyp, td#segDetailSrc, td#segDetailEngineTrans {
 	font-size: 14px;
     font-family: courier, fixed, monospace;	
 	text-align: left;
