@@ -9,6 +9,7 @@
 <script src="js/jquery.js" type="text/javascript"></script>
 <script src="js/jquery.flot.js" type="text/javascript"></script>
 <script src="js/utils.js" type="text/javascript"></script>
+<script src="js/lcs.js" type="text/javascript"></script>
 </head>
 
 <body>
@@ -101,7 +102,7 @@ var bing_translate_api_key = "";
 
 // Show the given bleu score in the appropriate place
 function showScore(score, prec, brevity, sysid, srclang, numRefSets) {
-    var elt = document.getElementById('bleuScoreDiv');
+  var elt = document.getElementById('bleuScoreDiv');
 	var scorehtml = "<span style=\"font-size: 40px;\">" + (score*100).toFixed(2) + "</span><br/>" +
         prec.toFixed(4) + " * " + brevity.toFixed(4) + "<br/>" + 
         "<span style=\"font-size:12px;\">";
@@ -110,6 +111,20 @@ function showScore(score, prec, brevity, sysid, srclang, numRefSets) {
 	}
 	scorehtml += "[System: " + sysid + "]<br/>[" + numRefSets + " reference(s)]</span>";
 	elt.innerHTML = scorehtml;
+}
+
+function lcsColorize(sentence, indices_to_color) {
+    var colorhtml = '';
+    var words = sentence.split(' ');
+    for (var i=0; i<words.length; i++) {
+        if (indices_to_color.indexOf(i) != -1) {
+            colorhtml += words[i] + ' ';
+        }
+        else {
+            colorhtml += '<span style="color: blue;">' + words[i] + '</span> ';
+        }
+  }
+  return colorhtml;
 }
 
 // Show two BLEU scores side by side when we are comparing two systems
@@ -166,6 +181,18 @@ function showTable(individualNgramScores, cumulativeNgramScores) {
 function showSegDetails(segnum, docid, bleu, lenratio, lengths) {
 	var elt = document.getElementById('segDetailContainer');
 	var reflens = lengths.slice(1);
+
+  // Compute the longest common subsequence (LCS) between the appropriate
+  // items: when there is a single system, then between the hyp and the ref
+  // and when there are two systems, then between the the hyps
+  if (tstSets[1] != undefined) {
+    var lcslist;
+    var tokhyp1 = tstSets[0].documents[docid][segnum]
+    var tokhyp2 = tstSets[1].documents[docid][segnum];
+    lcslist = lcs(tokhyp1.split(' '), tokhyp2.split(' '));
+  }
+
+  // show the header for the table
 	if (tstSets[1] != undefined) {
     	var tablehtml = '<table border="1" style="margin: 0px auto; width: 700px;">' + 
     					'<tr>' + 
@@ -194,8 +221,8 @@ function showSegDetails(segnum, docid, bleu, lenratio, lengths) {
 
 	// Add all the references				
 	for(var i=0; i < refSets.length; i++) {
-		var ref = refSets[i].untokenizedDocuments[docid][segnum];
-		ref = $('#caseCheckBox').attr('checked') ? ref : ref.toLowerCase();i
+    var ref = refSets[i].untokenizedDocuments[docid][segnum];
+		ref = $('#caseCheckBox').attr('checked') ? ref : ref.toLowerCase();
 		tablehtml += '<tr>' + 
 			         '<td align="center" id="segDetailHeader">Reference<br/>(' + refSets[i].refid + ')</td>' + 
 			         '<td id="segDetailRef' + i + '">' + ref + '</td>' +
@@ -205,23 +232,25 @@ function showSegDetails(segnum, docid, bleu, lenratio, lengths) {
 	// Add the hypothesis or hypotheses as the case may be
 
 	if (tstSets[1] != undefined) {
-	    var hyp = tstSets[0].untokenizedDocuments[docid][segnum];
-	    hyp = $('#caseCheckBox').attr('checked') ? hyp : hyp.toLowerCase();	
+	    tokhyp1 = $('#caseCheckBox').attr('checked') ? tokhyp1 : tokhyp1.toLowerCase();	
+      hyp1_html = lcsColorize(tokhyp1, lcslist.xindices);
 	    tablehtml += '<tr>' + 
 				 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
-				 '<td id="segDetailHyp">' + hyp + '<span style="font-size: 11px;"> [' + segmentScoreTuples[docid][segnum][0].toFixed(2) + ']</span></td>' + 
+				 '<td id="segDetailHyp">' + hyp1_html + '<span style="font-size: 11px;"> [' + segmentScoreTuples[docid][segnum][0].toFixed(2) + ']</span></td>' + 
 				 '</tr>';
 
-    	hyp = tstSets[1].untokenizedDocuments[docid][segnum];
-    	hyp = $('#caseCheckBox').attr('checked') ? hyp : hyp.toLowerCase();	
+    	// hyp = tstSets[1].untokenizedDocuments[docid][segnum];
+    	tokhyp2 = $('#caseCheckBox').attr('checked') ? tokhyp2 : tokhyp2.toLowerCase();	
+      hyp2_html = lcsColorize(tokhyp2, lcslist.yindices);
     	tablehtml += '<tr>' + 
     		     '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[1].sysid + ')</td>' + 
-    			 '<td id="segDetailHyp">' + hyp + '<span style="font-size: 11px;"> [' + segmentScoreTuples[docid][segnum][1].toFixed(2) + ']</span></td>' + 
+    			 '<td id="segDetailHyp">' + hyp2_html + '<span style="font-size: 11px;"> [' + segmentScoreTuples[docid][segnum][1].toFixed(2) + ']</span></td>' + 
     			 '</tr>';	    
 	}
 	else {
     	var hyp = tstSets[0].untokenizedDocuments[docid][segnum];
     	hyp = $('#caseCheckBox').attr('checked') ? hyp : hyp.toLowerCase();	
+      // hyp1_html = lcsColorize(tokhyp1, lcslist.xindices);
     	tablehtml += '<tr>' + 
 			 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
 			 '<td id="segDetailHyp">' + hyp + '</td>' + 
@@ -229,7 +258,7 @@ function showSegDetails(segnum, docid, bleu, lenratio, lengths) {
 
 	}
 				
-	// Show a google translate link if there is a source file
+	// Show a google/bing translate link if there is a source file
 	if (srcSets.length > 0) {
         var engineName = $('input[name=comparisonEngine]:checked').val();
         if (engineName != "none") {
