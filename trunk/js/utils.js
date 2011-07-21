@@ -10,7 +10,26 @@ function floatingRound(num) {
     return num > 0 ? Math.ceil(num)*100/100 : -Math.ceil(Math.abs(num)*100)/100;
 }
 
+// Utility functions for finding all negative and positive numbers
+findNegatives = function(x) { return x < 0;}
+findPositives = function(x) { return x >= 0;}
 
+// Find the optimal y-axis limits for displaying a set of BLEU score differences
+function findSymmetricYAxisLimits(segmentDiffsArray) {
+    var negatives = [];
+    var positives = [];
+    var largestAbsoluteNegativeDiff, largestPositiveDiff, limit;
+    for(var i=0; i<segmentDiffsArray.length; i++) {
+        negatives.push.apply(negatives, segmentDiffsArray[i].filter(findNegatives));
+        positives.push.apply(positives, segmentDiffsArray[i].filter(findPositives));
+    }
+    jQuery.each(negatives, function(idx, val) { negatives[idx] = Math.abs(val); });
+    largestAbsoluteNegativeDiff = Math.max.apply(Math, negatives);
+    largestPositiveDiff = Math.max.apply(Math, positives);
+    limit = Math.max(largestAbsoluteNegativeDiff, largestPositiveDiff);
+    limit = Math.min(limit+0.05, 1.0)
+    return limit;
+}
 
 // Utility funtion to compare whether two arrays are equal
 jQuery.fn.compare = function(other) {
