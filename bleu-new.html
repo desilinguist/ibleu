@@ -86,8 +86,6 @@ var segmentScoreTuples = {};
 var docidpat = /DocID: (.*) \((.*)\)/;	
 var docidpat2 = /Segment (.*), Document "(.*)"/;
 
-var docPlotArray;
-
 // Create a hash that will give us the two letter code for any language
 var languageNameHash = new Array();
 languageNameHash['French'] = 'fr';
@@ -118,7 +116,7 @@ function showScore(score, prec, brevity, sysid, srclang, numRefSets) {
 	elt.innerHTML = scorehtml;
 }
 
-function lcsColorize(sentence, indices_to_color) {
+function lcsColorize(sentence, indices_to_color, color) {
     var colorhtml = '';
     var words = sentence.split(' ');
     for (var i=0; i<words.length; i++) {
@@ -126,7 +124,7 @@ function lcsColorize(sentence, indices_to_color) {
             colorhtml += words[i] + ' ';
         }
         else {
-            colorhtml += '<span style="color: blue;">' + words[i] + '</span> ';
+            colorhtml += '<span style="color: ' + color + '; font-weight: bold;">' + words[i] + '</span> ';
         }
   }
   return colorhtml;
@@ -166,7 +164,7 @@ function showTable(individualNgramScores, cumulativeNgramScores) {
 	                   "<th>3-gram</th>" + 
 	                   "<th>4-gram</th>" + 
 	                 "</tr>" + 
-	                 "<tr>" + 
+                 "<tr>" + 
 	                   "<td>Individual</td>" + 
 	                   "<td>" + individualNgramScores[1].toFixed(4) + "</td>" +  
 	                   "<td>" + individualNgramScores[2].toFixed(4) + "</td>" +  
@@ -204,13 +202,24 @@ function showSegDetails(event) {
 	var reflens = lengths.slice(1);
 
   // Compute the longest common subsequence (LCS) between the appropriate
-  // items: when there is a single system, then between the hyp and the ref
+  // items: when there is a single system, then between the hyp and the ref(s)
   // and when there are two systems, then between the the hyps
   if (tstSets[1] != undefined) {
     var lcslist;
     var tokhyp1 = tstSets[0].documents[docid][segnum]
     var tokhyp2 = tstSets[1].documents[docid][segnum];
     lcslist = lcs(tokhyp1.split(' '), tokhyp2.split(' '));
+  }
+  else {
+    var hypLCSList = [];
+    var refLCSLists = [];
+    var tokhyp = tstSets[0].documents[docid][segnum];
+    for (var i=0; i<refSets.length; i++) {
+      var tokref = refSets[i].documents[docid][segnum];
+      var lcslist = lcs(tokhyp.split(' '), tokref.split(' '));
+      hypLCSList.push.apply(hypLCSList, lcslist.xindices);
+      refLCSLists.push(lcslist.yindices);
+    }
   }
 
   // show the header for the table
@@ -242,19 +251,29 @@ function showSegDetails(event) {
 
 	// Add all the references				
 	for(var i=0; i < refSets.length; i++) {
-    var ref = refSets[i].untokenizedDocuments[docid][segnum];
-		ref = $('#caseCheckBox').attr('checked') ? ref : ref.toLowerCase();
-		tablehtml += '<tr>' + 
-			         '<td align="center" id="segDetailHeader">Reference<br/>(' + refSets[i].refid + ')</td>' + 
-			         '<td id="segDetailRef' + i + '">' + ref + '</td>' +
-		             '</tr>'; 		
+    if (tstSets[1] != undefined) {
+      var ref = refSets[i].untokenizedDocuments[docid][segnum];
+      ref = $('#caseCheckBox').attr('checked') ? ref : ref.toLowerCase();
+      tablehtml += '<tr>' + 
+                 '<td align="center" id="segDetailHeader">Reference<br/>(' + refSets[i].refid + ')</td>' + 
+                 '<td id="segDetailRef' + i + '">' + ref + '</td>' +
+                   '</tr>';             
+    }
+    else {
+      var tokref = refSets[i].documents[docid][segnum];
+      tokref = $('#caseCheckBox').attr('checked') ? tokref : tokref.toLowerCase();
+      ref_html = lcsColorize(tokref, refLCSLists[i], '#CC3333');
+      tablehtml += '<tr>' + 
+                 '<td align="center" id="segDetailHeader">Reference<br/>(' + refSets[i].refid + ')</td>' + 
+                 '<td id="segDetailRef' + i + '">' + ref_html + '</td>' +
+                   '</tr>';           
+    }
 	}
 	
 	// Add the hypothesis or hypotheses as the case may be
-
 	if (tstSets[1] != undefined) {
 	    tokhyp1 = $('#caseCheckBox').attr('checked') ? tokhyp1 : tokhyp1.toLowerCase();	
-      hyp1_html = lcsColorize(tokhyp1, lcslist.xindices);
+      hyp1_html = lcsColorize(tokhyp1, lcslist.xindices, 'blue');
 	    tablehtml += '<tr>' + 
 				 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
 				 '<td id="segDetailHyp">' + hyp1_html + '<span style="font-size: 11px;"> [' + segmentScoreTuples[docid][segnum][0].toFixed(2) + ']</span></td>' + 
@@ -262,7 +281,7 @@ function showSegDetails(event) {
 
     	// hyp = tstSets[1].untokenizedDocuments[docid][segnum];
     	tokhyp2 = $('#caseCheckBox').attr('checked') ? tokhyp2 : tokhyp2.toLowerCase();	
-      hyp2_html = lcsColorize(tokhyp2, lcslist.yindices);
+      hyp2_html = lcsColorize(tokhyp2, lcslist.yindices, 'blue');
     	tablehtml += '<tr>' + 
     		     '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[1].sysid + ')</td>' + 
     			 '<td id="segDetailHyp">' + hyp2_html + '<span style="font-size: 11px;"> [' + segmentScoreTuples[docid][segnum][1].toFixed(2) + ']</span></td>' + 
@@ -270,11 +289,11 @@ function showSegDetails(event) {
 	}
 	else {
     	var hyp = tstSets[0].untokenizedDocuments[docid][segnum];
-    	hyp = $('#caseCheckBox').attr('checked') ? hyp : hyp.toLowerCase();	
-      // hyp1_html = lcsColorize(tokhyp1, lcslist.xindices);
+      tokhyp = $('#caseCheckBox').attr('checked') ? tokhyp : tokhyp.toLowerCase(); 
+      hyp_html = lcsColorize(tokhyp, hypLCSList, '#CC3333');
     	tablehtml += '<tr>' + 
 			 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
-			 '<td id="segDetailHyp">' + hyp + '</td>' + 
+			 '<td id="segDetailHyp">' + hyp_html + '</td>' + 
 			 '</tr>';
 
 	}
@@ -614,23 +633,6 @@ $(document).ready(function() {
 	// Hide any segment details
 	$('#segDetailContainer').html("");
 
-    // // Attach the tooltip callback to the large segment plot
-    // var previousPoint = null;
-    // $("#bleuSegPlot").bind("plothover", function (event, pos, item) {
-    //     if (item) {
-    //         if (previousPoint != item.datapoint) {
-    //             previousPoint = item.datapoint;
-        
-    //             $("#tooltip").remove();    
-    //             showTooltip(item.pageX, item.pageY, item.datapoint[1].toFixed(2));
-    //         }
-    //      }
-    //      else {
-    //          $("#tooltip").remove();
-    //          previousPoint = null; 
-    //      }
-    // });
-
     // Initialize the score containers
     scontainer = null;
     scontainer2 = null;
@@ -817,7 +819,7 @@ $(document).ready(function() {
 			$('#bleuDocPlotsContainer').html("");
 	    $('#bleuDocPlotsContainer').hide();
 	    $('#bleuSegPlotContainer').hide();
-		  $('#segDetailContainer').html("");
+		  $('#segDetailContainer').html("");      
       allDocPlots = [];
 			
 			var scores = [];
@@ -877,7 +879,7 @@ $(document).ready(function() {
 
                 // get data for all doc plots together, either as score differences or raw scores 
                 // depending on whether there are 1 or 2 systems
-                // var docPlotArray;
+                var docPlotArray;
                 var ymin, ymax;
 
                 if (tstSets[1] != undefined) {
@@ -912,7 +914,7 @@ $(document).ready(function() {
                     plot = makeColumnChart('docPlot' + idLabel, docPlotScores[i], docPlotTicks[i], seriesLabel, "small", ymin, ymax);
 
                     // save a reference to the plot
-                    allDocPlots.push(plot);
+                    //allDocPlots.push(plot);
 
                     // Create a non-legend label for the plot
                     plotLabel = 'Document ' + (i+1) + ' (' + docPlotLabels[i][1] + ')';
@@ -965,27 +967,6 @@ $(document).ready(function() {
         }
     });
 
-    /* $('div[id^=docPlot]').live('click', function(e) {
-        var plotNumber = $(this).attr('id').slice(-3);
-        var smallerPlot = allDocPlots[parseInt(plotNumber, 10)];
-        showLargerPlot(smallerPlot, scontainer.segmentScores);
-		    // clear any segment details
-		    $('#segDetailContainer').html("");
-          $('html, body').animate({
-            scrollTop: $("#bleuSegPlotContainer").offset().top 
-          }, 1000);
-    }); */
-    // $('div[class^=highcharts-container]').live('click', function(e) {
-    //     var plotNumber = $(this).parent().attr('id').slice(-3);
-    //     alert(plotNumber);
-    //     var smallerPlot = allDocPlots[parseInt(plotNumber, 10)];
-    //     showLargerPlot(smallerPlot, scontainer.segmentScores);
-    //     // clear any segment details
-    //     $('#segDetailContainer').html("");
-    //       $('html, body').animate({
-    //         scrollTop: $("#bleuSegPlotContainer").offset().top 
-    //       }, 1000);
-    // });
 	  $('a#engineTranslate').live('click', function(e) {
 		e.preventDefault();
         var engineName = $('input[name=comparisonEngine]:checked').val();

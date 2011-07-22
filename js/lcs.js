@@ -71,7 +71,7 @@ function lcs(xs, ys) {
     var lcslist = new Object();
     lcslist.xindices = new Array();
     lcslist.yindices = new Array();
-    lcslist.words = new Array();
+    // lcslist.words = new Array();
 
     // Walk back from the bottom right corner of the grid 
     // and store information into the LCS object
@@ -82,7 +82,7 @@ function lcs(xs, ys) {
     while (true) {
         move = grid[j][i].move;
         if (move == '\\') {
-            lcslist.words.push(xs[i-1]);
+            // lcslist.words.push(xs[i-1]);
             lcslist.xindices.push(i-1);
             lcslist.yindices.push(j-1);
             // tuple = [xs[i-1], i-1, j-1]
@@ -102,12 +102,11 @@ function lcs(xs, ys) {
     }
 
     // Reverse the component lists of the LCS object
-    lcslist.words.reverse();
+    // lcslist.words.reverse();
     lcslist.xindices.reverse();
     lcslist.yindices.reverse();
 
     // Return the LCS object
     return lcslist;
 }
-
 

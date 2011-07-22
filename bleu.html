@@ -113,7 +113,7 @@ function showScore(score, prec, brevity, sysid, srclang, numRefSets) {
 	elt.innerHTML = scorehtml;
 }
 
-function lcsColorize(sentence, indices_to_color) {
+function lcsColorize(sentence, indices_to_color, color) {
     var colorhtml = '';
     var words = sentence.split(' ');
     for (var i=0; i<words.length; i++) {
@@ -121,7 +121,7 @@ function lcsColorize(sentence, indices_to_color) {
             colorhtml += words[i] + ' ';
         }
         else {
-            colorhtml += '<span style="color: blue;">' + words[i] + '</span> ';
+            colorhtml += '<span style="color: ' + color + '; font-weight: bold;">' + words[i] + '</span> ';
         }
   }
   return colorhtml;
@@ -191,6 +191,17 @@ function showSegDetails(segnum, docid, bleu, lenratio, lengths) {
     var tokhyp2 = tstSets[1].documents[docid][segnum];
     lcslist = lcs(tokhyp1.split(' '), tokhyp2.split(' '));
   }
+  else {
+    var hypLCSList = [];
+    var refLCSLists = [];
+    var tokhyp = tstSets[0].documents[docid][segnum];
+    for (var i=0; i<refSets.length; i++) {
+      var tokref = refSets[i].documents[docid][segnum];
+      var lcslist = lcs(tokhyp.split(' '), tokref.split(' '));
+      hypLCSList.push.apply(hypLCSList, lcslist.xindices);
+      refLCSLists.push(lcslist.yindices);
+    }
+  }
 
   // show the header for the table
 	if (tstSets[1] != undefined) {
@@ -219,21 +230,32 @@ function showSegDetails(segnum, docid, bleu, lenratio, lengths) {
                      '</tr>';               
     }
 
-	// Add all the references				
-	for(var i=0; i < refSets.length; i++) {
-    var ref = refSets[i].untokenizedDocuments[docid][segnum];
-		ref = $('#caseCheckBox').attr('checked') ? ref : ref.toLowerCase();
-		tablehtml += '<tr>' + 
-			         '<td align="center" id="segDetailHeader">Reference<br/>(' + refSets[i].refid + ')</td>' + 
-			         '<td id="segDetailRef' + i + '">' + ref + '</td>' +
-		             '</tr>'; 		
-	}
+	
+  // Add all the references				
+  for(var i=0; i < refSets.length; i++) {
+    if (tstSets[1] != undefined) {
+      var ref = refSets[i].untokenizedDocuments[docid][segnum];
+      ref = $('#caseCheckBox').attr('checked') ? ref : ref.toLowerCase();
+      tablehtml += '<tr>' + 
+                 '<td align="center" id="segDetailHeader">Reference<br/>(' + refSets[i].refid + ')</td>' + 
+                 '<td id="segDetailRef' + i + '">' + ref + '</td>' +
+                   '</tr>';             
+    }
+    else {
+      var tokref = refSets[i].documents[docid][segnum];
+      tokref = $('#caseCheckBox').attr('checked') ? tokref : tokref.toLowerCase();
+      ref_html = lcsColorize(tokref, refLCSLists[i], '#CC3333');
+      tablehtml += '<tr>' + 
+                 '<td align="center" id="segDetailHeader">Reference<br/>(' + refSets[i].refid + ')</td>' + 
+                 '<td id="segDetailRef' + i + '">' + ref_html + '</td>' +
+                   '</tr>';           
+    }
+  }
 	
 	// Add the hypothesis or hypotheses as the case may be
-
 	if (tstSets[1] != undefined) {
 	    tokhyp1 = $('#caseCheckBox').attr('checked') ? tokhyp1 : tokhyp1.toLowerCase();	
-      hyp1_html = lcsColorize(tokhyp1, lcslist.xindices);
+      hyp1_html = lcsColorize(tokhyp1, lcslist.xindices, 'blue');
 	    tablehtml += '<tr>' + 
 				 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
 				 '<td id="segDetailHyp">' + hyp1_html + '<span style="font-size: 11px;"> [' + segmentScoreTuples[docid][segnum][0].toFixed(2) + ']</span></td>' + 
@@ -241,21 +263,20 @@ function showSegDetails(segnum, docid, bleu, lenratio, lengths) {
 
     	// hyp = tstSets[1].untokenizedDocuments[docid][segnum];
     	tokhyp2 = $('#caseCheckBox').attr('checked') ? tokhyp2 : tokhyp2.toLowerCase();	
-      hyp2_html = lcsColorize(tokhyp2, lcslist.yindices);
+      hyp2_html = lcsColorize(tokhyp2, lcslist.yindices, 'blue');
     	tablehtml += '<tr>' + 
     		     '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[1].sysid + ')</td>' + 
     			 '<td id="segDetailHyp">' + hyp2_html + '<span style="font-size: 11px;"> [' + segmentScoreTuples[docid][segnum][1].toFixed(2) + ']</span></td>' + 
     			 '</tr>';	    
 	}
 	else {
-    	var hyp = tstSets[0].untokenizedDocuments[docid][segnum];
-    	hyp = $('#caseCheckBox').attr('checked') ? hyp : hyp.toLowerCase();	
-      // hyp1_html = lcsColorize(tokhyp1, lcslist.xindices);
-    	tablehtml += '<tr>' + 
-			 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
-			 '<td id="segDetailHyp">' + hyp + '</td>' + 
-			 '</tr>';
-
+      var hyp = tstSets[0].untokenizedDocuments[docid][segnum];
+      tokhyp = $('#caseCheckBox').attr('checked') ? tokhyp : tokhyp.toLowerCase(); 
+      hyp_html = lcsColorize(tokhyp, hypLCSList, '#CC3333');
+      tablehtml += '<tr>' + 
+       '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
+       '<td id="segDetailHyp">' + hyp_html + '</td>' + 
+       '</tr>';
 	}
 				
 	// Show a google/bing translate link if there is a source file
