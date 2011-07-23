@@ -70,5 +70,9 @@ td#segDetailID, td#segDetailRef0, td#segDetailRef1, td#segDetailRef2, td#segDeta
 	padding: 5px;
 }
 
+.docplot { cursor: pointer; }
+
+.tickLabel { font-size: 90% }
+
 a.jslink:visited { color: #0000FF;}
 

@@ -1,0 +1,83 @@
+<!--
+ History:
+ version-XML 1.5:
+    added srclang attribute values:
+      'Czech'
+      'French'
+      'German'
+      'Spanish'
+    added trglang attribute values:
+      'Arabic'
+      'Czech'
+      'Farsi'
+      'German'
+      'Spanish'
+      'Urdu'
+    added doc genre attribute values:
+      'ps' (prepared speech)
+      'wl' (weblog)
+      'xx' (unspecified)
+ version-XML 1.4:
+    added doc genre attribute values:
+      'sp' (speech)
+      'ed' (editorial)
+      'bc' (broadcast conversations)
+      'bn' (broadcast news)
+      'ng' (newsgroup)
+ version-XML 1.3:
+    removed tstset 'condition' attribute
+    removed tstset 'type' attribute
+    updated srclang attribute values (Arabic, Chinese, English, Farsi, Urdu)
+    updated trglang attribute values (Chinese, English, French )
+ version-XML 1.2:
+    added tstset type attribute (one of primary, contrastive1, contrastive2, contrastive3)
+    added tstset condition attribute (one of constrained, unconstrained)
+    added tstset sysid attribute
+    added refset refid attribute
+    updated srclang attribute values (Arabic, Chinese, English, Urdu)
+    updated trglang attribute values (Chinese, English)
+    updated genre attribute values (nw, wb)
+    removed doc sysid attribute
+    removed srcset trglang attribute
+ version-XML 1.1: 
+    added French as trglang value
+    added Farsi as a srclang value
+    added web as a genre value
+ version-XML 1.0: move to first XML version of the DTD
+-->
+
+<!ENTITY lt     "&#38;#60;">
+<!ENTITY gt     "&#62;">
+<!ENTITY amp    "&#38;#38;">
+<!ENTITY apos   "&#39;">
+<!ENTITY quot   "&#34;">
+
+<!ELEMENT mteval (srcset | refset+ | tstset+)>
+<!ELEMENT srcset (doc+)>
+<!ATTLIST srcset setid CDATA #REQUIRED>
+<!ATTLIST srcset srclang (Arabic | Chinese | Czech | English | Farsi | French | German | Spanish | Urdu) #REQUIRED>
+
+<!ELEMENT refset (doc+)>
+<!ATTLIST refset setid CDATA #REQUIRED>
+<!ATTLIST refset srclang (Arabic | Chinese | Czech | English | Farsi | French | German | Spanish | Urdu) #REQUIRED>
+<!ATTLIST refset trglang (Arabic | Chinese | Czech | English | Farsi | French | German | Spanish | Urdu) #REQUIRED>
+<!ATTLIST refset refid CDATA #REQUIRED>
+
+<!ELEMENT tstset (doc+)>
+<!ATTLIST tstset setid CDATA #REQUIRED>
+<!ATTLIST tstset srclang (Arabic | Chinese | Czech | English | Farsi | French | German | Spanish | Urdu) #REQUIRED>
+<!ATTLIST tstset trglang (Arabic | Chinese | Czech | English | Farsi | French | German | Spanish | Urdu) #REQUIRED>
+<!ATTLIST tstset sysid CDATA #REQUIRED>
+
+<!ELEMENT doc (hl | p | poster | seg)*>
+<!ATTLIST doc docid CDATA #REQUIRED>
+<!ATTLIST doc genre (bc | bn | ed | ng | nw | sp | ps | wb | wl | xx) #REQUIRED>
+
+<!ELEMENT hl (seg*)>
+
+<!ELEMENT p (seg*)>
+
+<!ELEMENT poster (seg*)>
+
+<!ELEMENT seg (#PCDATA)>
+<!ATTLIST seg id CDATA #REQUIRED>
