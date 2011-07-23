@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<link rel=stylesheet type="text/css" href="bleu-new.css">
+<link rel=stylesheet type="text/css" href="bleu-flot.css">
 
 <title>iBLEU: Interactive BLEU Scoring</title>
 <script src="js/bleu.js" type="text/javascript"></script>
@@ -10,9 +10,6 @@
 <script src="js/jquery.flot.js" type="text/javascript"></script>
 <script src="js/utils.js" type="text/javascript"></script>
 <script src="js/lcs.js" type="text/javascript"></script>
-<script type="text/javascript" src="js/highcharts.js"></script>
-<script type="text/javascript" src="js/highcharts.theme.gray.js"></script>
-
 </head>
 
 <body>
@@ -164,7 +161,7 @@ function showTable(individualNgramScores, cumulativeNgramScores) {
 	                   "<th>3-gram</th>" + 
 	                   "<th>4-gram</th>" + 
 	                 "</tr>" + 
-                 "<tr>" + 
+	                 "<tr>" + 
 	                   "<td>Individual</td>" + 
 	                   "<td>" + individualNgramScores[1].toFixed(4) + "</td>" +  
 	                   "<td>" + individualNgramScores[2].toFixed(4) + "</td>" +  
@@ -181,28 +178,12 @@ function showTable(individualNgramScores, cumulativeNgramScores) {
                        "</table>";
 }
 
-function showSegDetails(event) {
-
-  var segnum = event.point.x;
-  var docid = this.name.match(docidpat)[1];
-  var bleu = event.point.y.toFixed(2);
-  var lengths = [tstSets[0].documents[docid][segnum].split(" ").length];
-  
-  // Compute average reference length
-  var reflens = refSets.map(function(rset) { return rset.documents[docid][segnum].split(" ").length; });
-  lengths = lengths.concat(reflens);
-  var avgreflen = reflens.reduce(function(a,b) { return a + b; })/reflens.length;
-
-  // Compute the length ratio of the segment length to the average reference length
-  var lenratio = lengths[0]/avgreflen;
-  
-  $('#segDetailContainer').show();
-
+function showSegDetails(segnum, docid, bleu, lenratio, lengths) {
 	var elt = document.getElementById('segDetailContainer');
 	var reflens = lengths.slice(1);
 
   // Compute the longest common subsequence (LCS) between the appropriate
-  // items: when there is a single system, then between the hyp and the ref(s)
+  // items: when there is a single system, then between the hyp and the ref
   // and when there are two systems, then between the the hyps
   if (tstSets[1] != undefined) {
     var lcslist;
@@ -236,7 +217,7 @@ function showSegDetails(event) {
     					'<tr>' + 
     						'<td align="center" id="segDetailHeader" width="20%">ID</td>' + 
     						'<td align="left" id="segDetailID">Segment ' + (segnum+1) + ', Document "' + docid + '"' + 
-    						' [' + bleu + ' BLEU, '+ lenratio.toFixed(3) + ' Length Ratio]</td>' +
+    						' [' + bleu + ' BLEU, '+ lenratio + ' Length Ratio]</td>' +
     					'</tr>'; 	    
 	}
 	
@@ -249,8 +230,9 @@ function showSegDetails(event) {
                      '</tr>';               
     }
 
-	// Add all the references				
-	for(var i=0; i < refSets.length; i++) {
+	
+  // Add all the references				
+  for(var i=0; i < refSets.length; i++) {
     if (tstSets[1] != undefined) {
       var ref = refSets[i].untokenizedDocuments[docid][segnum];
       ref = $('#caseCheckBox').attr('checked') ? ref : ref.toLowerCase();
@@ -268,7 +250,7 @@ function showSegDetails(event) {
                  '<td id="segDetailRef' + i + '">' + ref_html + '</td>' +
                    '</tr>';           
     }
-	}
+  }
 	
 	// Add the hypothesis or hypotheses as the case may be
 	if (tstSets[1] != undefined) {
@@ -288,14 +270,13 @@ function showSegDetails(event) {
     			 '</tr>';	    
 	}
 	else {
-    	var hyp = tstSets[0].untokenizedDocuments[docid][segnum];
+      var hyp = tstSets[0].untokenizedDocuments[docid][segnum];
       tokhyp = $('#caseCheckBox').attr('checked') ? tokhyp : tokhyp.toLowerCase(); 
       hyp_html = lcsColorize(tokhyp, hypLCSList, '#CC3333');
-    	tablehtml += '<tr>' + 
-			 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
-			 '<td id="segDetailHyp">' + hyp_html + '</td>' + 
-			 '</tr>';
-
+      tablehtml += '<tr>' + 
+       '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
+       '<td id="segDetailHyp">' + hyp_html + '</td>' + 
+       '</tr>';
 	}
 				
 	// Show a google/bing translate link if there is a source file
@@ -308,12 +289,20 @@ function showSegDetails(event) {
 	
 	tablehtml += '</table>';
 	elt.innerHTML = tablehtml;
-
-  $('html, body').animate({
-    scrollTop: $("#segDetailContainer").offset().top 
-  }, 1000);
 }
 
+function showTooltip(x, y, contents) {
+    $('<div id="tooltip">' + contents + '</div>').css( {
+        position: 'absolute',
+        display: 'none',
+        top: y - 10,
+        left: x + 10,
+        border: '1px solid #fdd',
+        padding: '2px',
+        'background-color': '#fee',
+        opacity: 0.80
+    }).appendTo("body").fadeIn(200);
+}
 
 function googleTranslate(text) {
 	var newScript = document.createElement('script');
@@ -349,116 +338,11 @@ function showGoogleTranslation(response) {
     $('tr#segDetailEngine').html(tdhtml);
 }
 
-function makeColumnChart(plotdiv, yscores, xticks, label, smallOrBig, ymin, ymax) {
-    var chart;
-    var showToolTips;
-    var pointwidth;
-    var showLegend;
-    var showAnimation;
-    var clickCallBack;
-    var showXTicks;
-    var YTickInterval;
-    var XTickWidth;
-    var pointClickCallback;
-    var pointCursor;
-
-    if (smallOrBig == "small") {
-        showToolTips = false;
-        showLegend = false;
-        showAnimation = false;
-        pointwidth = 2;
-        clickCallback = { click: showLargerPlot };
-        showXTicks = false;
-        YTickInterval = 0.5;
-        XTickWidth = 0;
-        pointClickCallback = { legendItemClick : function(event) { return false; }, };
-        pointCursor = 'auto';
-    }
-    else {
-        showToolTips = true;
-        showLegend = true;
-        showAnimation = true;
-        pointwidth = null;
-        clickCallback = { };
-        showXTicks = true;
-        YTickInterval = 0.2;
-        XTickWidth = null;
-        pointClickCallback = { legendItemClick : function(event) { return false; }, click : showSegDetails};
-        pointCursor = 'pointer';
-    }
-
-    if (yscores.length > 35) {
-      showXTicks = false;
-    }
-
-    chart = new Highcharts.Chart({
-        chart: {
-            renderTo: plotdiv,
-            defaultSeriesType: 'column',
-            animation: showAnimation,
-            borderRadius: 5,
-            events: clickCallback
-        },                  
-        title: {
-            text: ''
-        },
-        xAxis: {
-            tickWidth: XTickWidth,
-            categories: xticks,
-            labels: {
-                enabled: showXTicks
-            }
-        },
-        yAxis: {
-            min: ymin,
-            max: ymax,
-            tickInterval: YTickInterval,
-            title: {
-                text: ''
-            }
-        },
-        tooltip: {
-            enabled: showToolTips,
-            formatter: function() {
-                return this.y.toFixed(2);
-            }
-        },
-        legend: {
-            // align: 'right',
-            // verticalAlign: 'top',
-            // x: 0,
-            // y: 10,
-            // floating: true,
-            enabled: showLegend
-        },
-        plotOptions: {
-            column: {
-                cursor : pointCursor,
-                pointWidth: pointwidth,
-                borderWidth: 0,
-                enableMouseTracking: showToolTips,
-                events: pointClickCallback
-            }
-        },
-        series: [{
-            animation: showAnimation,
-            shadow: false,
-            name: label,
-            data: yscores,
-        }],
-        credits: {
-            enabled: false
-        }
-    });
-    return chart;
-}
-
-
 // Create the plot data for all the documents
 function createDocPlotsData(documentScores, segmentScores) {
-    var alldScores = [];
-    var alldTicks = [];
+    var alld = [];
     var d = [];
+    var finalalld = [];
     var docScoreLabels = [];
     var docIdNumHash = {};
 
@@ -467,38 +351,51 @@ function createDocPlotsData(documentScores, segmentScores) {
     for (docid in documentScores) {
         docScoreLabels[i] = [docid, documentScores[docid].toFixed(2)];
         docIdNumHash[docid] = i;
-        alldScores[i] = [];
+        alld[i] = finalalld[i] = [];
         i += 1;
     }
 
     // Create the data for segment scores for each document plot
     for (var j=0; j<segmentScores.length; j++) { 
         var so = segmentScores[j];
-        alldScores[docIdNumHash[so.docid]].push(so.score);
+        alld[docIdNumHash[so.docid]].push(so.score);
     }
 
     // Now go over each array in alld and add the x axis ticks
-    for (var k=0; k<alldScores.length; k++) {
-        alldTicks[k] = [];
-        for (var l=0; l<alldScores[k].length; l++) {
-            alldTicks[k].push(l);
-        }
+    for (var k=0; k<alld.length; k++) {
+        var xtick = 0;
+        finalalld[k] = alld[k].map(function(item) { xtick += 1; return [xtick, item]; });
     }
 
-    // return everything
-    return [alldScores, alldTicks, docScoreLabels];
-}
+    // Populate the final plot options structs that will be used for each docPlot
+    var options = {
+        series: {stack: 0,
+                 lines: {show: false, steps: false ,},
+                 bars: {show: true, barWidth: 0.4, align: 'center',},
+                 color: '#333333'},
+        //xaxis: {ticks: ticksArray,},
+        xaxis: {ticks: [],},
+        grid: {backgroundColor: { colors: ["#fff", "#eee"] },},
+        yaxis: { min: 0.0, max: 1.0, },
+        legend: { show : false, }, 
+    };
 
+    // return everything
+    return [finalalld, docScoreLabels, options];
+}
 
 // Create the plot data for all the documents
 function createDocPlotsDataForComparison(documentScores1, segmentScores1, documentScores2, segmentScores2) {
 
-  var documentScoreDiffs = {};
-  var segmentScoreDiffs = [];
-  var alldScores = [];
-  var alldTicks = [];
-  var docScoreLabels = [];
-  var docIdNumHash = {};
+    var documentScoreDiffs = {};
+    var segmentScoreDiffs = [];
+    var alld = [];
+    var d = [];
+    var finalalld = [];
+    var docScoreLabels = [];
+    var docIdNumHash = {};
+    var maxdiff = 0.0;
+    var mindiff = 0.0;
 
 	// Compute the differences in the document scores ...
 	for (docid in documentScores1) { 
@@ -506,20 +403,26 @@ function createDocPlotsDataForComparison(documentScores1, segmentScores1, docume
 	}
 
 	// ... and the segment scores
-  for (var j=0; j<segmentScores1.length; j++) {
-    var sd = {};
-    var score1 = segmentScores1[j].score; 
-    var score2 = segmentScores2[j].score; 
-  	var diff = score1 - score2;
-  	sd.diff = diff;
-  	sd.docid = segmentScores1[j].docid;
-  	sd.segnum = segmentScores1[j].segnum;
-  	segmentScoreDiffs.push(sd);
-    if (!segmentScoreTuples[sd.docid]) {
-        segmentScoreTuples[sd.docid] = []
+    for (var j=0; j<segmentScores1.length; j++) {
+        var sd = {}
+        var score1 = segmentScores1[j].score; 
+        var score2 = segmentScores2[j].score; 
+    	var diff =  score1 - score2;    	
+    	if (diff < 0) {
+    	    mindiff = -Math.max(Math.abs(mindiff), Math.abs(diff));
+    	}
+    	else {
+    	    maxdiff = Math.max(maxdiff, diff);
+    	}
+    	sd.diff = diff;
+    	sd.docid = segmentScores1[j].docid;
+    	sd.segnum = segmentScores1[j].segnum;
+    	segmentScoreDiffs.push(sd);
+        if (!segmentScoreTuples[sd.docid]) {
+            segmentScoreTuples[sd.docid] = []
+        }
+        segmentScoreTuples[sd.docid].push([score1, score2]);
     }
-    segmentScoreTuples[sd.docid].push([score1, score2]);
-  }
 
     // Sort the document score diffs by magnitude so that the document with the largest
     // BLEU delta (negative or positive) shows up first
@@ -548,56 +451,81 @@ function createDocPlotsDataForComparison(documentScores1, segmentScores1, docume
         label = diff < 0 ? diff.toFixed(2) : '+' + diff.toFixed(2);
         docScoreLabels[i] = [docid, label];
         docIdNumHash[docid] = i;
-        alldScores[i] = [];
+        alld[i] = finalalld[i] = [];
         i += 1;
     }
 
     // Create the data for segment scores for each document plot
-    for (var j=0; j<segmentScoreDiffs.length; j++) {
-        var sd = segmentScoreDiffs[j];
-        alldScores[docIdNumHash[sd.docid]].push(sd.diff);
+    for (var j=0; j<segmentScoreDiffs.length; j++) { 
+        var sd = segmentScoreDiffs[j]
+        sdnum = sd.diff.toFixed(2);
+        alld[docIdNumHash[sd.docid]].push(sdnum);
     }
 
     // Now go over each array in alld and add the x axis ticks
-    for (var k=0; k<alldScores.length; k++) {
-        alldTicks[k] = [];
-        for (var l=0; l<alldScores[k].length; l++) {
-            alldTicks[k].push(l);
-        }
+    for (var k=0; k<alld.length; k++) {
+        var xtick = 0;
+        finalalld[k] = alld[k].map(function(item) { xtick += 1; return [xtick, item]; });
     }
     
-    // return everything    
-    return [alldScores, alldTicks, docScoreLabels];
+    // Pick the larger of maxdiff, mindiff as both ymix and ymax to produce a symmetrical looking plot
+    minmax = Math.max(Math.abs(mindiff), maxdiff);
+    minmax = Math.min(minmax+0.05, 1.0)
+
+    // Populate the final plot options structs that will be used for each docPlot
+    var options = {
+        series: {stack: 0,
+                 lines: {show: false, steps: false ,},
+                 bars: {show: true, barWidth: 0.4, align: 'center',},
+                 color: '#333333'},
+        //xaxis: {ticks: ticksArray,},
+        xaxis: {ticks: [],},
+        grid: {backgroundColor: { colors: ["#fff", "#eee"] },},
+        yaxis: { min: -minmax, max: minmax, },
+        legend: { show : false, }, 
+    };
+
+    // return everything
+    return [finalalld, docScoreLabels, options];
 }
 
-function showLargerPlot(event) { 
-
-    var plotNumber = $(this.container).parent().attr('id').slice(-3);
+function showLargerPlot(smallPlot, segmentScores) { 
 
     // get the data from the smaller plot
-    var series = this.series[0];
-    var data = series.data;
-    var label = series.name;
-    var yscores = [];
-    var xticks = [];
-
-    for (var i=0; i<data.length; i++) {
-        yscores.push(data[i].y);
-        xticks.push(data[i].x+1);  
+    var series = smallPlot.getData()[0];
+    var d = series.data;
+    var l = series.label;
+    if (tstSets[1] != undefined) {
+        var ymin = series.yaxis.min;
+        var ymax = series.yaxis.max;
+    }
+    else {
+        var ymin = 0.0;
+        var ymax = 1.0;
     }
 
-    var ymin = series.yAxis.getExtremes().min;
-    var ymax = series.yAxis.getExtremes().max;
+	// Set up the ticks array for the larger plot
+	var ticksArray = [];
+	if (d.length < 50) { 
+		for (var j in d) { var tick = parseInt(j) + 1; ticksArray.push([parseInt(tick), tick.toFixed()]); }
+	}
+
+    // set up the data and the options
+    var data = [ { data : d, label : l,} ];
+    var options = {
+        series: {stack: 0,
+                 lines: {show: false, steps: false ,},
+                 bars: {show: true, barWidth: 0.2, align: 'center',},
+                 color: '#243690'},
+        //xaxis: {ticks: [],},
+        xaxis: {ticks: ticksArray,},
+        grid: {backgroundColor: { colors: ["#fff", "#eee"] }, hoverable: true, clickable: true, },
+        yaxis: { min: ymin, max: ymax, },
+    };
 
     $('#bleuSegPlotContainer').show();
-    var largerPlot = makeColumnChart('bleuSegPlot', yscores, xticks, label, "big", ymin, ymax);
-
-    // clear any segment details
-    $('#segDetailContainer').html("");
-    $('html, body').animate({
-        scrollTop: $("#bleuSegPlotContainer").offset().top 
-    }, 1000);
-
+    var largerPlotPlaceHolder = $('#bleuSegPlot');
+    var largerPlot = $.plot(largerPlotPlaceHolder, data, options);
 }
 
 $(document).ready(function() {
@@ -623,15 +551,57 @@ $(document).ready(function() {
     //$('#bleuDetailContainer').css('border','none');
 
     // Hide the bleu plots
-  	$('#bleuSegPlot').html("");
+	$('#bleuSegPlot').html("");
     $('#bleuDocPlotsContainer').hide();
     $('#bleuSegPlotContainer').hide();
 
 	// Clear any stray tooltips 
-	// $("#tooltip").remove();
+	$("#tooltip").remove();
 	
 	// Hide any segment details
 	$('#segDetailContainer').html("");
+
+    // Attach the tooltip callback to the large segment plot
+    var previousPoint = null;
+    $("#bleuSegPlot").bind("plothover", function (event, pos, item) {
+        if (item) {
+            if (previousPoint != item.datapoint) {
+                previousPoint = item.datapoint;
+        
+                $("#tooltip").remove();    
+                showTooltip(item.pageX, item.pageY, item.datapoint[1].toFixed(2));
+            }
+         }
+         else {
+             $("#tooltip").remove();
+             previousPoint = null; 
+         }
+    });
+
+    // Attach the click callback to the large segment plot
+    $("#bleuSegPlot").bind("plotclick", function (event, pos, item) {
+        if (item) {			
+			var segnum = item.dataIndex;
+			var docid = item.series.label.match(docidpat)[1];
+			var bleu = item.datapoint[1].toFixed(2);
+			var lengths = [tstSets[0].documents[docid][segnum].split(" ").length];
+			
+			// Compute average reference length
+			var reflens = refSets.map(function(rset) { return rset.documents[docid][segnum].split(" ").length; });
+			lengths = lengths.concat(reflens);
+			var avgreflen = reflens.reduce(function(a,b) { return a + b; })/reflens.length;
+
+			// Compute the length ratio of the segment length to the average reference length
+			var lenratio = lengths[0]/avgreflen;
+			
+			$('#segDetailContainer').show();
+			showSegDetails(segnum, docid, bleu, lenratio.toFixed(2), lengths);
+            //plot.highlight(item.series, item.datapoint);
+            $('html, body').animate({
+                scrollTop: $("#segDetailContainer").offset().top 
+            }, 1000);
+        }
+    });   
 
     // Initialize the score containers
     scontainer = null;
@@ -814,13 +784,14 @@ $(document).ready(function() {
 				}
 			}
 
-      // clear everything else
+            // clear everything else
 			$('#bleuSegPlot').html("");
 			$('#bleuDocPlotsContainer').html("");
-	    $('#bleuDocPlotsContainer').hide();
-	    $('#bleuSegPlotContainer').hide();
-		  $('#segDetailContainer').html("");      
-      allDocPlots = [];
+		    $('#bleuDocPlotsContainer').hide();
+		    $('#bleuSegPlotContainer').hide();
+		    $("#tooltip").remove();
+			$('#segDetailContainer').html("");
+            allDocPlots = [];
 			
 			var scores = [];
 			var brevities = [];
@@ -828,17 +799,17 @@ $(document).ready(function() {
 			var sysids = [];			
 			var srclang = srcSets.length > 0 ? srcSets[0].srclang : undefined;
 			
-      // Compute the bleu scores for the first system ...
-     	scontainer = scoreSystem(tstSets[0], refSets);
-      for (sysid in scontainer.bleuObjects) {
-      	var bo = scontainer.bleuObjects[sysid];
-          scores.push(bo.computeBLEU());
-          brevities.push(bo.brevity);
-          precisions.push(bo.precisions[4]);
-          sysids.push(sysid);
-      }
+            // Compute the bleu scores for the first system ...
+         	scontainer = scoreSystem(tstSets[0], refSets);
+            for (sysid in scontainer.bleuObjects) {
+            	var bo = scontainer.bleuObjects[sysid];
+                scores.push(bo.computeBLEU());
+                brevities.push(bo.brevity);
+                precisions.push(bo.precisions[4]);
+                sysids.push(sysid);
+            }
 
-     	// .. and the second system, if available
+         	// .. and the second system, if available
 			if (tstSets[1] != undefined) {
 	        	scontainer2 = scoreSystem(tstSets[1], refSets);
 	        	for (sysid in scontainer2.bleuObjects) {
@@ -879,23 +850,17 @@ $(document).ready(function() {
 
                 // get data for all doc plots together, either as score differences or raw scores 
                 // depending on whether there are 1 or 2 systems
-                var docPlotArray;
-                var ymin, ymax;
-
                 if (tstSets[1] != undefined) {
-                	docPlotArray = createDocPlotsDataForComparison(scontainer.documentScores, scontainer.segmentScores, scontainer2.documentScores, scontainer2.segmentScores);
-                  ymax = findSymmetricYAxisLimits(docPlotArray[0]);
-                  ymin = -ymax;
+                	var docPlotArray = createDocPlotsDataForComparison(scontainer.documentScores, scontainer.segmentScores, scontainer2.documentScores, scontainer2.segmentScores, numDocuments);
                 }
                 else {
-                	docPlotArray = createDocPlotsData(scontainer.documentScores, scontainer.segmentScores);
-                  ymin = 0.0;
-                  ymax = 1.0;
+                	var docPlotArray = createDocPlotsData(scontainer.documentScores, scontainer.segmentScores, numDocuments);
                 }
-                var docPlotScores = docPlotArray[0];
-                var docPlotTicks = docPlotArray[1];
-                var docPlotLabels = docPlotArray[2];
-
+                var docPlotData = docPlotArray[0];
+                var docPlotLabels = docPlotArray[1];
+                var docPlotOptions = docPlotArray[2];
+                
+                var data;
                 var seriesLabel;
                 var plotLabel;
 				        var idLabel;
@@ -903,22 +868,25 @@ $(document).ready(function() {
                 // Make all the document plots
                 for (var i=0; i < numDocuments; i++) {
 
-    		            // Create a label for the plot
-    		            idLabel = ("00" + i).slice(-3); // pad with two leading zeros
+					           // Create a label for the plot
+					           idLabel = ("00" + i).slice(-3); // pad with two leading zeros
 
                     // render the plot placeholder
-                    $('#bleuDocPlotsContainer').append('<div class="docplot" id="docPlot' + idLabel + '" style="width:200px; height:100px; display:inline-block; margin: 10px; white-space:nowrap;"</div>');
+                    $('#bleuDocPlotsContainer').append('<div class="docplot" id="docPlot' + idLabel +
+                        '"style="width:200px; height:100px; display:inline-block;' + 
+                        'white-space:nowrap;"</div>');
 
                     // render the plot itself
                     seriesLabel = 'DocID: ' + docPlotLabels[i][0] + ' (' + docPlotLabels[i][1] + ')';
-                    plot = makeColumnChart('docPlot' + idLabel, docPlotScores[i], docPlotTicks[i], seriesLabel, "small", ymin, ymax);
+                    data = [ { data : docPlotData[i], label : seriesLabel,} ];
+                    plot = $.plot($('#docPlot' + idLabel), data, docPlotOptions);
 
                     // save a reference to the plot
-                    //allDocPlots.push(plot);
+                    allDocPlots.push(plot);
 
                     // Create a non-legend label for the plot
                     plotLabel = 'Document ' + (i+1) + ' (' + docPlotLabels[i][1] + ')';
-		                idLabel = ("00" + i).slice(-3); // pad with two leading zeros
+					          idLabel = ("00" + i).slice(-3); // pad with two leading zeros
                     $('#docPlot' + idLabel).append('<span id="docPlotLabel' + i + '" style="font-size: 11px; margin: 0px auto;">' + plotLabel + '</span>');
                 }
             }
@@ -967,7 +935,17 @@ $(document).ready(function() {
         }
     });
 
-	  $('a#engineTranslate').live('click', function(e) {
+    $('div[id^=docPlot]').live('click', function(e) {
+        var plotNumber = $(this).attr('id').slice(-3);
+        var smallerPlot = allDocPlots[parseInt(plotNumber, 10)];
+        showLargerPlot(smallerPlot, scontainer.segmentScores);
+		// clear any segment details
+		$('#segDetailContainer').html("");
+        $('html, body').animate({
+            scrollTop: $("#bleuSegPlotContainer").offset().top 
+        }, 1000);
+    });
+	$('a#engineTranslate').live('click', function(e) {
 		e.preventDefault();
         var engineName = $('input[name=comparisonEngine]:checked').val();
         if (engineName == "Google") {
