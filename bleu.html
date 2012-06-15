@@ -32,8 +32,8 @@
   <input type="file" class="filepicker" name="tstFile" id="tstFile" size="60"><br/>
   <a id="secondHypLink" href="#" style="font-size:12px; display:none;">Compare to another system?</a>
   <div id="secondHypDiv" name="secondHypDiv" style="display: none;">
-  	<span class="fileLabel">Pick second hypothesis XML</span><br/><br/>
-  	<input type="file" class="filepicker" name="tstFile2" id="tstFile2" size="60"><br/>
+    <span class="fileLabel">Pick second hypothesis XML</span><br/><br/>
+    <input type="file" class="filepicker" name="tstFile2" id="tstFile2" size="60"><br/>
   </div>
   </p>
   <p id="refFileStuff">
@@ -83,7 +83,7 @@ var scontainer;
 var scontainer2;
 var allDocPlots = [];
 var segmentScoreTuples = {};
-var docidpat = /DocID: (.*) \((.*)\)/;	
+var docidpat = /DocID: (.*) \((.*)\)/;  
 var docidpat2 = /Segment (.*), Document "(.*)"/;
 
 // Create a hash that will give us the two letter code for any language
@@ -110,14 +110,14 @@ var bing_translate_api_key = "";
 // Show the given bleu score in the appropriate place
 function showScore(score, prec, brevity, sysid, srclang, numRefSets) {
   var elt = document.getElementById('bleuScoreDiv');
-	var scorehtml = "<span style=\"font-size: 40px;\">" + (score*100).toFixed(2) + "</span><br/>" +
+    var scorehtml = "<span style=\"font-size: 40px;\">" + (score*100).toFixed(2) + "</span><br/>" +
         prec.toFixed(4) + " * " + brevity.toFixed(4) + "<br/>" + 
         "<span style=\"font-size:12px;\">";
-	if (srclang != undefined) {
-		scorehtml += "[Source Language: " + srclang + "]<br/>";
-	}
-	scorehtml += "[System: " + sysid + "]<br/>[" + numRefSets + " reference(s)]</span>";
-	elt.innerHTML = scorehtml;
+    if (srclang != undefined) {
+        scorehtml += "[Source Language: " + srclang + "]<br/>";
+    }
+    scorehtml += "[System: " + sysid + "]<br/>[" + numRefSets + " reference(s)]</span>";
+    elt.innerHTML = scorehtml;
 }
 
 function lcsColorize(sentence, indices_to_color, color) {
@@ -141,47 +141,47 @@ function showSideBySideScores(scores, precisions, brevities, sysids, srclang, nu
     tr1 += "<td>&nbsp;&nbsp;&nbsp;vs&nbsp;&nbsp;&nbsp;</td>";
     tr1 += "<td style=\"font-size: 40px; text-align: center;\">" +  (scores[1]*100).toFixed(2) + "</td></tr>";
     var tr2 = "<tr><td style=\"text-align: center;\">" + precisions[0].toFixed(4) + " * " + brevities[0].toFixed(4) + "</td>";
-	tr2 += "<td></td>";
-	tr2 += "<td style=\"text-align: center;\">" + precisions[1].toFixed(4) + " * " + brevities[1].toFixed(4) + "</td></tr>";
+    tr2 += "<td></td>";
+    tr2 += "<td style=\"text-align: center;\">" + precisions[1].toFixed(4) + " * " + brevities[1].toFixed(4) + "</td></tr>";
     var tr3 = "<tr><td style=\"font-size: 12px; text-align: center;\">" + "[System: " + sysids[0] + "]</td>";
     tr3 += "<td></td>";
     tr3 += "<td style=\"font-size: 12px; text-align: center;\">" + "[System: " + sysids[1] + "]</td></tr>";
     trblank = "<tr><td colspan=\"3\">&nbsp;</td></tr>";
     tr4 = "<tr><td colspan=\"3\" style=\"text-align: center;\">";
-	if (srclang != undefined) {
-		tr4 += "[Source Language: " + srclang + "]<br/>";
-	}
-	tr4 += "[" + numRefSets + " reference(s)]</tr></td>";
-	elt.innerHTML = "<table>" + tr1 + tr2 + tr3 + trblank + tr4 + "</table>";        
+    if (srclang != undefined) {
+        tr4 += "[Source Language: " + srclang + "]<br/>";
+    }
+    tr4 += "[" + numRefSets + " reference(s)]</tr></td>";
+    elt.innerHTML = "<table>" + tr1 + tr2 + tr3 + trblank + tr4 + "</table>";        
 }
 
 
 // Show the details (individual and cumulative) precisions in a table
 function showTable(individualNgramScores, cumulativeNgramScores) {
-	var elt = document.getElementById('bleuTableDiv');
+    var elt = document.getElementById('bleuTableDiv');
     elt.innerHTML = "<span style=\"font-size:12px;\">Breakdown of scores (<a href=\"\" class=\"jslink\" id=\"tableHider\">Show</a>)</span><br/>" + 
                     "<table id=\"bleuTable\" border=1>" + 
-	                 "<tr align=\"center\">" + 
-  	                   "<th>Type</th>" + 
-	                   "<th>1-gram</th>" + 
-	                   "<th>2-gram</th>" + 
-	                   "<th>3-gram</th>" + 
-	                   "<th>4-gram</th>" + 
-	                 "</tr>" + 
+                     "<tr align=\"center\">" + 
+                       "<th>Type</th>" + 
+                       "<th>1-gram</th>" + 
+                       "<th>2-gram</th>" + 
+                       "<th>3-gram</th>" + 
+                       "<th>4-gram</th>" + 
+                     "</tr>" + 
                  "<tr>" + 
-	                   "<td>Individual</td>" + 
-	                   "<td>" + individualNgramScores[1].toFixed(4) + "</td>" +  
-	                   "<td>" + individualNgramScores[2].toFixed(4) + "</td>" +  
-	                   "<td>" + individualNgramScores[3].toFixed(4) + "</td>" +  
-	                   "<td>" + individualNgramScores[4].toFixed(4) + "</td>" +  
-	                 "</tr>" + 
+                       "<td>Individual</td>" + 
+                       "<td>" + individualNgramScores[1].toFixed(4) + "</td>" +  
+                       "<td>" + individualNgramScores[2].toFixed(4) + "</td>" +  
+                       "<td>" + individualNgramScores[3].toFixed(4) + "</td>" +  
+                       "<td>" + individualNgramScores[4].toFixed(4) + "</td>" +  
+                     "</tr>" + 
                       "<tr>" +
                        "<td>Cumulative</td>" + 
-	                   "<td>" + cumulativeNgramScores[1].toFixed(4) + "</td>" +  
-	                   "<td>" + cumulativeNgramScores[2].toFixed(4) + "</td>" +  
-	                   "<td>" + cumulativeNgramScores[3].toFixed(4) + "</td>" +  
-	                   "<td>" + cumulativeNgramScores[4].toFixed(4) + "</td>" +  
-	                   "</tr>" + 
+                       "<td>" + cumulativeNgramScores[1].toFixed(4) + "</td>" +  
+                       "<td>" + cumulativeNgramScores[2].toFixed(4) + "</td>" +  
+                       "<td>" + cumulativeNgramScores[3].toFixed(4) + "</td>" +  
+                       "<td>" + cumulativeNgramScores[4].toFixed(4) + "</td>" +  
+                       "</tr>" + 
                        "</table>";
 }
 
@@ -202,8 +202,8 @@ function showSegDetails(event) {
   
   $('#segDetailContainer').show();
 
-	var elt = document.getElementById('segDetailContainer');
-	var reflens = lengths.slice(1);
+    var elt = document.getElementById('segDetailContainer');
+    var reflens = lengths.slice(1);
 
   // Compute the longest common subsequence (LCS) between the appropriate
   // items: when there is a single system, then between the hyp and the ref(s)
@@ -227,23 +227,23 @@ function showSegDetails(event) {
   }
 
   // show the header for the table
-	if (tstSets[1] != undefined) {
-    	var tablehtml = '<table border="1" style="margin: 0px auto; width: 700px;">' + 
-    					'<tr>' + 
-    						'<td align="center" id="segDetailHeader" width="20%">ID</td>' + 
-    						'<td align="left" id="segDetailID">Segment ' + (segnum+1) + ', Document "' + docid + '"' + 
-    						' [&Delta;<sub>BLEU</sub>=' + bleu + ']</td>' +
-    					'</tr>'; 	    
-	}
-	else {
-    	var tablehtml = '<table border="1" style="margin: 0px auto; width: 700px;">' + 
-    					'<tr>' + 
-    						'<td align="center" id="segDetailHeader" width="20%">ID</td>' + 
-    						'<td align="left" id="segDetailID">Segment ' + (segnum+1) + ', Document "' + docid + '"' + 
-    						' [' + bleu + ' BLEU, '+ lenratio.toFixed(3) + ' Length Ratio]</td>' +
-    					'</tr>'; 	    
-	}
-	
+    if (tstSets[1] != undefined) {
+        var tablehtml = '<table border="1" style="margin: 0px auto; width: 700px;">' + 
+                        '<tr>' + 
+                            '<td align="center" id="segDetailHeader" width="20%">ID</td>' + 
+                            '<td align="left" id="segDetailID">Segment ' + (segnum+1) + ', Document "' + docid + '"' + 
+                            ' [&Delta;<sub>BLEU</sub>=' + bleu + ']</td>' +
+                        '</tr>';        
+    }
+    else {
+        var tablehtml = '<table border="1" style="margin: 0px auto; width: 700px;">' + 
+                        '<tr>' + 
+                            '<td align="center" id="segDetailHeader" width="20%">ID</td>' + 
+                            '<td align="left" id="segDetailID">Segment ' + (segnum+1) + ', Document "' + docid + '"' + 
+                            ' [' + bleu + ' BLEU, '+ lenratio.toFixed(3) + ' Length Ratio]</td>' +
+                        '</tr>';        
+    }
+    
     // Add the source sentence, if availble
     if (srcSets.length > 0) {
         var src = srcSets[0].documents[docid][segnum];
@@ -253,8 +253,8 @@ function showSegDetails(event) {
                      '</tr>';               
     }
 
-	// Add all the references				
-	for(var i=0; i < refSets.length; i++) {
+    // Add all the references               
+    for(var i=0; i < refSets.length; i++) {
     if (tstSets[1] != undefined) {
       var ref = refSets[i].untokenizedDocuments[docid][segnum];
       ref = $('#caseCheckBox').attr('checked') ? ref : ref.toLowerCase();
@@ -272,46 +272,46 @@ function showSegDetails(event) {
                  '<td id="segDetailRef' + i + '">' + ref_html + '</td>' +
                    '</tr>';           
     }
-	}
-	
-	// Add the hypothesis or hypotheses as the case may be
-	if (tstSets[1] != undefined) {
-	    tokhyp1 = $('#caseCheckBox').attr('checked') ? tokhyp1 : tokhyp1.toLowerCase();	
+    }
+    
+    // Add the hypothesis or hypotheses as the case may be
+    if (tstSets[1] != undefined) {
+        tokhyp1 = $('#caseCheckBox').attr('checked') ? tokhyp1 : tokhyp1.toLowerCase(); 
       hyp1_html = lcsColorize(tokhyp1, lcslist.xindices, 'blue');
-	    tablehtml += '<tr>' + 
-				 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
-				 '<td id="segDetailHyp">' + hyp1_html + '<span style="font-size: 11px;"> [' + segmentScoreTuples[docid][segnum][0].toFixed(2) + ']</span></td>' + 
-				 '</tr>';
+        tablehtml += '<tr>' + 
+                 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
+                 '<td id="segDetailHyp">' + hyp1_html + '<span style="font-size: 11px;"> [' + segmentScoreTuples[docid][segnum][0].toFixed(2) + ']</span></td>' + 
+                 '</tr>';
 
-    	// hyp = tstSets[1].untokenizedDocuments[docid][segnum];
-    	tokhyp2 = $('#caseCheckBox').attr('checked') ? tokhyp2 : tokhyp2.toLowerCase();	
+        // hyp = tstSets[1].untokenizedDocuments[docid][segnum];
+        tokhyp2 = $('#caseCheckBox').attr('checked') ? tokhyp2 : tokhyp2.toLowerCase(); 
       hyp2_html = lcsColorize(tokhyp2, lcslist.yindices, 'blue');
-    	tablehtml += '<tr>' + 
-    		     '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[1].sysid + ')</td>' + 
-    			 '<td id="segDetailHyp">' + hyp2_html + '<span style="font-size: 11px;"> [' + segmentScoreTuples[docid][segnum][1].toFixed(2) + ']</span></td>' + 
-    			 '</tr>';	    
-	}
-	else {
-    	var hyp = tstSets[0].untokenizedDocuments[docid][segnum];
+        tablehtml += '<tr>' + 
+                 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[1].sysid + ')</td>' + 
+                 '<td id="segDetailHyp">' + hyp2_html + '<span style="font-size: 11px;"> [' + segmentScoreTuples[docid][segnum][1].toFixed(2) + ']</span></td>' + 
+                 '</tr>';       
+    }
+    else {
+        var hyp = tstSets[0].untokenizedDocuments[docid][segnum];
       tokhyp = $('#caseCheckBox').attr('checked') ? tokhyp : tokhyp.toLowerCase(); 
       hyp_html = lcsColorize(tokhyp, hypLCSList, '#CC3333');
-    	tablehtml += '<tr>' + 
-			 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
-			 '<td id="segDetailHyp">' + hyp_html + '</td>' + 
-			 '</tr>';
+        tablehtml += '<tr>' + 
+             '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
+             '<td id="segDetailHyp">' + hyp_html + '</td>' + 
+             '</tr>';
 
-	}
-				
-	// Show a google/bing translate link if there is a source file
-	if (srcSets.length > 0) {
+    }
+                
+    // Show a google/bing translate link if there is a source file
+    if (srcSets.length > 0) {
         var engineName = $('input[name=comparisonEngine]:checked').val();
         if (engineName != "none") {
             tablehtml += '<tr id="segDetailEngine"><td style="text-align:center; font-size: 14px;" colspan=2><a href="#" class="jslink" id="engineTranslate">What does ' + engineName + ' say?</a></td></tr>';
         }
-	}
-	
-	tablehtml += '</table>';
-	elt.innerHTML = tablehtml;
+    }
+    
+    tablehtml += '</table>';
+    elt.innerHTML = tablehtml;
 
   $('html, body').animate({
     scrollTop: $("#segDetailContainer").offset().top 
@@ -320,12 +320,12 @@ function showSegDetails(event) {
 
 
 function googleTranslate(text) {
-	var newScript = document.createElement('script');
-	var source = "https://www.googleapis.com/language/translate/v2?key=" + window.google_translate_api_key + "&target=en&callback=showGoogleTranslation&q=" + text;
-	newScript.src = source;
-	document.getElementsByTagName('head')[0].appendChild(newScript);
-	document.getElementsByTagName('head')[0].removeChild(newScript);
-	newScript = null;					
+    var newScript = document.createElement('script');
+    var source = "https://www.googleapis.com/language/translate/v2?key=" + window.google_translate_api_key + "&target=en&callback=showGoogleTranslation&q=" + text;
+    newScript.src = source;
+    document.getElementsByTagName('head')[0].appendChild(newScript);
+    document.getElementsByTagName('head')[0].removeChild(newScript);
+    newScript = null;                   
 }
 
 function bingTranslate(text, srclang) {        
@@ -504,21 +504,21 @@ function createDocPlotsDataForComparison(documentScores1, segmentScores1, docume
   var docScoreLabels = [];
   var docIdNumHash = {};
 
-	// Compute the differences in the document scores ...
-	for (docid in documentScores1) { 
-		documentScoreDiffs[docid] = documentScores1[docid] - documentScores2[docid];
-	}
+    // Compute the differences in the document scores ...
+    for (docid in documentScores1) { 
+        documentScoreDiffs[docid] = documentScores1[docid] - documentScores2[docid];
+    }
 
-	// ... and the segment scores
+    // ... and the segment scores
   for (var j=0; j<segmentScores1.length; j++) {
     var sd = {};
     var score1 = segmentScores1[j].score; 
     var score2 = segmentScores2[j].score; 
-  	var diff = score1 - score2;
-  	sd.diff = diff;
-  	sd.docid = segmentScores1[j].docid;
-  	sd.segnum = segmentScores1[j].segnum;
-  	segmentScoreDiffs.push(sd);
+    var diff = score1 - score2;
+    sd.diff = diff;
+    sd.docid = segmentScores1[j].docid;
+    sd.segnum = segmentScores1[j].segnum;
+    segmentScoreDiffs.push(sd);
     if (!segmentScoreTuples[sd.docid]) {
         segmentScoreTuples[sd.docid] = []
     }
@@ -541,7 +541,7 @@ function createDocPlotsDataForComparison(documentScores1, segmentScores1, docume
     for (var i=0; i<tuples.length; i++) {
         sortedDocIDs.push(tuples[i][0]);
     }
-	
+    
     // Create the labels for each plot (the document score differences)
     var i = 0;
     var label;
@@ -627,85 +627,130 @@ $(document).ready(function() {
     //$('#bleuDetailContainer').css('border','none');
 
     // Hide the bleu plots
-  	$('#bleuSegPlot').html("");
+    $('#bleuSegPlot').html("");
     $('#bleuDocPlotsContainer').hide();
     $('#bleuSegPlotContainer').hide();
 
-	// Clear any stray tooltips 
-	// $("#tooltip").remove();
-	
-	// Hide any segment details
-	$('#segDetailContainer').html("");
+    // Clear any stray tooltips 
+    // $("#tooltip").remove();
+    
+    // Hide any segment details
+    $('#segDetailContainer').html("");
 
     // Initialize the score containers
     scontainer = null;
     scontainer2 = null;
 
-    // Process the source xml file
+    // Process the source xml or plaintext file
+    // We make the decision based on the extension right now which is a bit hacky
     $('#srcFile').change(function (e) {
         srcSets = [];
         var srcfile = e.target.files[0];
         var reader = new FileReader();
         reader.onload = function() { 
-            var xml = reader.result;
-            var sset = $('srcset', xml); 
+            var extension = srcfile.name.split('.').pop();
 
-            // Get the set and system ids
-            var srcSet = {};
-            srcSet.setid = sset.attr("setid");
-			srcSet.srclang = sset.attr("srclang");
-            srcSet.documents = {};
+            // if the extension is ".xml" then process the xml file
+            if (extension == 'xml') {
+                var xml = reader.result;
+                var sset = $('srcset', xml); 
 
-            var srcDocs = {};
-            $('doc', xml).each(function (doc) {
-                var docid = $(this).attr("docid");
-                var segs = [];
-                $(this).find("seg").each(function (seg) {
-                    //var segid = $(this).attr("id");
-					segs.push($(this).text());
-                    // segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
+                // Get the set and system ids
+                var srcSet = {};
+                srcSet.setid = sset.attr("setid");
+                srcSet.srclang = sset.attr("srclang");
+                srcSet.documents = {};
+
+                var srcDocs = {};
+                $('doc', xml).each(function (doc) {
+                  var docid = $(this).attr("docid");
+                  var segs = [];
+                  $(this).find("seg").each(function (seg) {
+                      //var segid = $(this).attr("id");
+                      segs.push($(this).text());
+                      // segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
+                  });
+                  srcSet.documents[docid] = segs;
                 });
+            }
+            else if (extension == "txt") {
+                var txt = reader.result;
+                var srcSet = {};
+                srcSet.setid = "fakeset";
+                srcSet.sysid = "fakesys";
+                srcSet.documents = {};
+                srcSet.untokenizedDocuments = {};
+                var docid = "fakedoc";
+                var segs = [];
+                var originalSegs = txt.split('\n').slice(0, -1);
+                for (var i=0; i < originalSegs.length; i++) {
+                    segs.push(tokenize(originalSegs[i], $('#caseCheckBox').attr('checked')));
+                }
                 srcSet.documents[docid] = segs;
-            });
+                srcSet.untokenizedDocuments[docid] = originalSegs;
+            }
             srcSets.push(srcSet);
-
+            
             // Enable the Bing/Google radio buttons if the source file has been parsed successfully
             if (srcSets.length > 0) {
                 $('input[name=comparisonEngine]').filter('#comparisonEngine1').removeAttr('disabled');
                 $('input[name=comparisonEngine]').filter('#comparisonEngine2').removeAttr('disabled');
             }    
-        }     
+        }
         reader.readAsText(srcfile);
     });
 
-    // Process the system xml file
+    // Process the system xml or plaintext file
+    // We make the decision based on the extension right now which is a bit hacky
     $('#tstFile').change(function (e) {
         var tstfile = e.target.files[0];
         var reader = new FileReader();
         reader.onload = function() { 
+            var extension = tstfile.name.split('.').pop();
             var xml = reader.result;
             var tset = $('tstset', xml); 
 
-            // Get the set and system ids
-            var tstSet = {};
-            tstSet.setid = tset.attr("setid");
-            tstSet.sysid = tset.attr("sysid");
-            tstSet.documents = {};
-			tstSet.untokenizedDocuments = {};
+            // if the extension is ".xml" then process the xml file
+            if (extension == 'xml') {
+                var xml = reader.result;
+                var tset = $('tstset', xml); 
+    
+                // Get the set and system ids
+                var tstSet = {};
+                tstSet.setid = tset.attr("setid");
+                tstSet.sysid = tset.attr("sysid");
+                tstSet.documents = {};
+                tstSet.untokenizedDocuments = {};
 
-            var tstDocs = {};
-            $('doc', xml).each(function (doc) {
-                var docid = $(this).attr("docid");
-                var segs = [];
-				var originalSegs = [];
-                $(this).find("seg").each(function (seg) {
-                    //var segid = $(this).attr("id");
-                    segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
-					originalSegs.push($(this).text());
+                $('doc', xml).each(function (doc) {
+                    var docid = $(this).attr("docid");
+                    var segs = [];
+                    var originalSegs = [];
+                    $(this).find("seg").each(function (seg) {
+                        //var segid = $(this).attr("id");
+                        segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
+                        originalSegs.push($(this).text());
+                    });
+                    tstSet.documents[docid] = segs;
+                    tstSet.untokenizedDocuments[docid] = originalSegs;
                 });
+            }
+            else if (extension == "txt") {
+                var txt = reader.result;
+                var tstSet = {};
+                tstSet.setid = "fakeset";
+                tstSet.sysid = "fakesys";
+                tstSet.documents = {};
+                tstSet.untokenizedDocuments = {};
+                var docid = "fakedoc";
+                var segs = [];
+                var originalSegs = txt.split('\n').slice(0, -1);
+                for (var i=0; i < originalSegs.length; i++) {
+                    segs.push(tokenize(originalSegs[i], $('#caseCheckBox').attr('checked')));
+                }
                 tstSet.documents[docid] = segs;
                 tstSet.untokenizedDocuments[docid] = originalSegs;
-            });
+            }
             tstSets[0] = tstSet;
         }     
         reader.readAsText(tstfile);
@@ -715,159 +760,204 @@ $(document).ready(function() {
         var tstfile = e.target.files[0];
         var reader = new FileReader();
         reader.onload = function() { 
-            var xml = reader.result;
-            var tset = $('tstset', xml); 
+            var extension = tstfile.name.split('.').pop();
 
-            // Get the set and system ids
-            var tstSet = {};
-            tstSet.setid = tset.attr("setid");
-            tstSet.sysid = tset.attr("sysid");
-            tstSet.documents = {};
-			tstSet.untokenizedDocuments = {};
+            if (extension == "xml") {
+                var xml = reader.result;
+                var tset = $('tstset', xml); 
 
-            var tstDocs = {};
-            $('doc', xml).each(function (doc) {
-                var docid = $(this).attr("docid");
-                var segs = [];
-				var originalSegs = [];
-                $(this).find("seg").each(function (seg) {
-                    //var segid = $(this).attr("id");
-                    segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
-					originalSegs.push($(this).text());
+                // Get the set and system ids
+                var tstSet = {};
+                tstSet.setid = tset.attr("setid");
+                tstSet.sysid = tset.attr("sysid");
+                tstSet.documents = {};
+                tstSet.untokenizedDocuments = {};
+
+                var tstDocs = {};
+                $('doc', xml).each(function (doc) {
+                    var docid = $(this).attr("docid");
+                    var segs = [];
+                    var originalSegs = [];
+                    $(this).find("seg").each(function (seg) {
+                        //var segid = $(this).attr("id");
+                        segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
+                        originalSegs.push($(this).text());
+                    });
+                    tstSet.documents[docid] = segs;
+                    tstSet.untokenizedDocuments[docid] = originalSegs;
                 });
+            }
+            else if (extension == "txt") {
+                var txt = reader.result;
+                var tstSet = {};
+                tstSet.setid = "fakeset";
+                tstSet.sysid = "fakesys";
+                tstSet.documents = {};
+                tstSet.untokenizedDocuments = {};
+                var docid = "fakedoc";
+                var segs = [];
+                var originalSegs = txt.split('\n').slice(0, -1);
+                for (var i=0; i < originalSegs.length; i++) {
+                    segs.push(tokenize(originalSegs[i], $('#caseCheckBox').attr('checked')));
+                }
                 tstSet.documents[docid] = segs;
                 tstSet.untokenizedDocuments[docid] = originalSegs;
-            });
-            tstSets[1] = tstSet;
+            }
+            tstSets[1] = tstSet;                            
         }     
         reader.readAsText(tstfile);
-	});
+    });
+
+    // Process the system xml or plaintext file
+    // We make the decision based on the extension right now which is a bit hacky
     $('#refFile').change(function(e) {
         refSets = [];
         var reffile = e.target.files[0];
         var reader = new FileReader();
         reader.onload = function() { 
 
-            var xml = reader.result;
+            var extension = reffile.name.split('.').pop();
 
-            // Process each refset
-            $('refset', xml).each(function(refset) { 
-                var rset = {};
+            // if the extension is ".xml" then process the xml file
+            if (extension == "xml") {
+                var xml = reader.result;
 
-                // Get the refid and setid for this refset
-                rset.setid = $(this).attr("setid");
-                rset.refid = $(this).attr("refid");
-                rset.documents = {};
-				rset.untokenizedDocuments = {};
+                // Process each refset
+                $('refset', xml).each(function(refset) { 
+                    var rset = {};
 
-                // Process all docs in each refset
-                $(this).find("doc").each(function(doc) {
-                    var docid = $(this).attr("docid");
-                    var segs = [];
-					var originalSegs = [];
-                    $(this).find("seg").each(function(seg) { 
-                        //var segid = $(this).attr("id");
-                        segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
-						originalSegs.push($(this).text());
+                    // Get the refid and setid for this refset
+                    rset.setid = $(this).attr("setid");
+                    rset.refid = $(this).attr("refid");
+                    rset.documents = {};
+                    rset.untokenizedDocuments = {};
+
+                    // Process all docs in each refset
+                    $(this).find("doc").each(function(doc) {
+                        var docid = $(this).attr("docid");
+                        var segs = [];
+                        var originalSegs = [];
+                        $(this).find("seg").each(function(seg) { 
+                            //var segid = $(this).attr("id");
+                            segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
+                            originalSegs.push($(this).text());
+                        });
+                        rset.documents[docid] = segs;
+                        rset.untokenizedDocuments[docid] = originalSegs;
                     });
-                    rset.documents[docid] = segs;
-					rset.untokenizedDocuments[docid] = originalSegs;
-                });
-                refSets.push(rset);
-            });
+                });                
+            }
+            else if (extension == "txt") {
+                var txt = reader.result;
+                var rset = {};
+                rset.setid = "fakeset";
+                rset.refid = "fakeref";
+                rset.documents = {};
+                rset.untokenizedDocuments = {};
+                var docid = "fakedoc";
+                var segs = [];
+                var originalSegs = txt.split('\n').slice(0, -1);
+                for (var i=0; i < originalSegs.length; i++) {
+                    segs.push(tokenize(originalSegs[i], $('#caseCheckBox').attr('checked')));
+                }
+                rset.documents[docid] = segs;
+                rset.untokenizedDocuments[docid] = originalSegs;
+            }
+            refSets.push(rset);            
         }
         reader.readAsText(reffile);
     });
+
     $('a#secondHypLink').click(function(e) {
-    	e.preventDefault();
-    	$('#secondHypDiv').slideToggle();
-    	$(this).css('display', 'none');
+        e.preventDefault();
+        $('#secondHypDiv').slideToggle();
+        $(this).css('display', 'none');
     });
     $('#scoreButton').click(function(e) {
         if (tstSets.length > 0 && refSets.length > 0) {
 
-			// validate each test set against the source set, if the latter is present
-			if (srcSets.length > 0) { 
-				for (var i=0; i<tstSets.length; i++) {
-					var tset = tstSets[i];
-					if (tset != undefined) {
-						if (!validateTstAndSrc(tset, srcSets[0])) {
-							alert("Error: the hypothesis XML file (sysid: " + tset.sysid + ") and the source XML file do not match up");
-							return false;
-						}
-					}
-				}
-			}
-			
-			// validate each tet set against the reference set
-			for (var i=0; i<tstSets.length; i++) {
-				var tset = tstSets[i];
-				if (tset != undefined) {
-					if (!validateTstAndRefs(tset, refSets)) {
-						alert("Error: the hypothesis XML file (sysid: " + tset.sysid + ") and one (or more) of the reference XML files do not match up");
-						return false;
-					}
-				}
-			}
-		
-			// also validate the two test sets against each other
-			if (tstSets[1] != undefined) {
-				if (!validateTstAndOtherTst(tstSets[0], tstSets[1])) {
-					alert("Error: the hypothesis XMLs do not match up (should have same document IDs, same set IDs but different sys IDs.")
-					return false;
-				}
-			}
+            // validate each test set against the source set, if the latter is present
+            if (srcSets.length > 0) { 
+                for (var i=0; i<tstSets.length; i++) {
+                    var tset = tstSets[i];
+                    if (tset != undefined) {
+                        if (!validateTstAndSrc(tset, srcSets[0])) {
+                            alert("Error: the hypothesis XML file (sysid: " + tset.sysid + ") and the source XML file do not match up");
+                            return false;
+                        }
+                    }
+                }
+            }
+            
+            // validate each tet set against the reference set
+            for (var i=0; i<tstSets.length; i++) {
+                var tset = tstSets[i];
+                if (tset != undefined) {
+                    if (!validateTstAndRefs(tset, refSets)) {
+                        alert("Error: the hypothesis XML file (sysid: " + tset.sysid + ") and one (or more) of the reference XML files do not match up");
+                        return false;
+                    }
+                }
+            }
+        
+            // also validate the two test sets against each other
+            if (tstSets[1] != undefined) {
+                if (!validateTstAndOtherTst(tstSets[0], tstSets[1])) {
+                    alert("Error: the hypothesis XMLs do not match up (should have same document IDs, same set IDs but different sys IDs.")
+                    return false;
+                }
+            }
 
       // clear everything else
-			$('#bleuSegPlot').html("");
-			$('#bleuDocPlotsContainer').html("");
-	    $('#bleuDocPlotsContainer').hide();
-	    $('#bleuSegPlotContainer').hide();
-		  $('#segDetailContainer').html("");      
+            $('#bleuSegPlot').html("");
+            $('#bleuDocPlotsContainer').html("");
+        $('#bleuDocPlotsContainer').hide();
+        $('#bleuSegPlotContainer').hide();
+          $('#segDetailContainer').html("");      
       allDocPlots = [];
-			
-			var scores = [];
-			var brevities = [];
-			var precisions = [];
-			var sysids = [];			
-			var srclang = srcSets.length > 0 ? srcSets[0].srclang : undefined;
-			
+            
+            var scores = [];
+            var brevities = [];
+            var precisions = [];
+            var sysids = [];            
+            var srclang = srcSets.length > 0 ? srcSets[0].srclang : undefined;
+            
       // Compute the bleu scores for the first system ...
-     	scontainer = scoreSystem(tstSets[0], refSets);
+        scontainer = scoreSystem(tstSets[0], refSets);
       for (sysid in scontainer.bleuObjects) {
-      	var bo = scontainer.bleuObjects[sysid];
+        var bo = scontainer.bleuObjects[sysid];
           scores.push(bo.computeBLEU());
           brevities.push(bo.brevity);
           precisions.push(bo.precisions[4]);
           sysids.push(sysid);
       }
 
-     	// .. and the second system, if available
-			if (tstSets[1] != undefined) {
-	        	scontainer2 = scoreSystem(tstSets[1], refSets);
-	        	for (sysid in scontainer2.bleuObjects) {
-            		var bo = scontainer2.bleuObjects[sysid];
-            		scores.push(bo.computeBLEU());
-            		brevities.push(bo.brevity);
-            		precisions.push(bo.precisions[4]);
-            		sysids.push(sysid);
-            	}
-	        }
+        // .. and the second system, if available
+            if (tstSets[1] != undefined) {
+                scontainer2 = scoreSystem(tstSets[1], refSets);
+                for (sysid in scontainer2.bleuObjects) {
+                    var bo = scontainer2.bleuObjects[sysid];
+                    scores.push(bo.computeBLEU());
+                    brevities.push(bo.brevity);
+                    precisions.push(bo.precisions[4]);
+                    sysids.push(sysid);
+                }
+            }
 
 
             // Show BLEU details (with details table hidden) if there is
             // only one system but if there are two, then show the scores
             // side by side and NO table.
             if (tstSets[1] != undefined) {
-            	showSideBySideScores(scores, precisions, brevities, sysids, srclang, refSets.length);
-            	$('#bleuTableDiv').html('');
-            	$('#bleuDetailContainer').css('border', '1px solid');
+                showSideBySideScores(scores, precisions, brevities, sysids, srclang, refSets.length);
+                $('#bleuTableDiv').html('');
+                $('#bleuDetailContainer').css('border', '1px solid');
             }
             else {
-            	showScore(scores[0], precisions[0], brevities[0], sysids[0], srclang, refSets.length);
-            	showTable(bo.individualNgramScores, bo.cumulativeNgramScores);
-            	$('#bleuTable').find('tbody').css('display', 'none');
-            	$('#bleuDetailContainer').css('border', '1px solid');
+                showScore(scores[0], precisions[0], brevities[0], sysids[0], srclang, refSets.length);
+                showTable(bo.individualNgramScores, bo.cumulativeNgramScores);
+                $('#bleuTable').find('tbody').css('display', 'none');
+                $('#bleuDetailContainer').css('border', '1px solid');
             }
 
             // build the doc plot strip of plots if there is more
@@ -887,12 +977,12 @@ $(document).ready(function() {
                 var ymin, ymax;
 
                 if (tstSets[1] != undefined) {
-                	docPlotArray = createDocPlotsDataForComparison(scontainer.documentScores, scontainer.segmentScores, scontainer2.documentScores, scontainer2.segmentScores);
+                    docPlotArray = createDocPlotsDataForComparison(scontainer.documentScores, scontainer.segmentScores, scontainer2.documentScores, scontainer2.segmentScores);
                   ymax = findSymmetricYAxisLimits(docPlotArray[0]);
                   ymin = -ymax;
                 }
                 else {
-                	docPlotArray = createDocPlotsData(scontainer.documentScores, scontainer.segmentScores);
+                    docPlotArray = createDocPlotsData(scontainer.documentScores, scontainer.segmentScores);
                   ymin = 0.0;
                   ymax = 1.0;
                 }
@@ -902,13 +992,13 @@ $(document).ready(function() {
 
                 var seriesLabel;
                 var plotLabel;
-				        var idLabel;
+                        var idLabel;
 
                 // Make all the document plots
                 for (var i=0; i < numDocuments; i++) {
 
-    		            // Create a label for the plot
-    		            idLabel = ("00" + i).slice(-3); // pad with two leading zeros
+                        // Create a label for the plot
+                        idLabel = ("00" + i).slice(-3); // pad with two leading zeros
 
                     // render the plot placeholder
                     $('#bleuDocPlotsContainer').append('<div class="docplot" id="docPlot' + idLabel + '" style="width:200px; height:100px; display:inline-block; margin: 10px; white-space:nowrap;"</div>');
@@ -922,7 +1012,7 @@ $(document).ready(function() {
 
                     // Create a non-legend label for the plot
                     plotLabel = 'Document ' + (i+1) + ' (' + docPlotLabels[i][1] + ')';
-		                idLabel = ("00" + i).slice(-3); // pad with two leading zeros
+                        idLabel = ("00" + i).slice(-3); // pad with two leading zeros
                     $('#docPlot' + idLabel).append('<span id="docPlotLabel' + i + '" style="font-size: 11px; margin: 0px auto;">' + plotLabel + '</span>');
                 }
             }
@@ -937,17 +1027,17 @@ $(document).ready(function() {
         var prevLinkValue = $('a#secondHypLink').css('display');
 
         if (tstSets.length > 0) {
-        	$('#tstFile').trigger('change');
-        	
-        	if (tstSets[1] != undefined) {
-        	    $('#tstFile2').trigger('change');        	
-        	}
-        	        	
-        	// Make sure that the compare link retains its state
-        	$('a#secondHypLink').css('display', prevLinkValue);        	
+            $('#tstFile').trigger('change');
+            
+            if (tstSets[1] != undefined) {
+                $('#tstFile2').trigger('change');           
+            }
+                        
+            // Make sure that the compare link retains its state
+            $('a#secondHypLink').css('display', prevLinkValue);         
         }
         if (refSets.length > 0) {
-        	$('#refFile').trigger('change');
+            $('#refFile').trigger('change');
         }
     });
     $('a#formHider').click(function(e) {
@@ -971,8 +1061,8 @@ $(document).ready(function() {
         }
     });
 
-	  $('a#engineTranslate').live('click', function(e) {
-		e.preventDefault();
+      $('a#engineTranslate').live('click', function(e) {
+        e.preventDefault();
         var engineName = $('input[name=comparisonEngine]:checked').val();
         if (engineName == "Google") {
             if (!window.google_translate_api_key) { 
@@ -981,19 +1071,19 @@ $(document).ready(function() {
                 else { return false; }
             }                       
         }
-		else {
+        else {
             if (!window.bing_translate_api_key) { 
-    			var key = prompt('Please enter your Bing Translate API Key which can be freely obtained from Microsoft. It will only be saved for this session. If you wish to permanently save this key, please edit this HTML file directly.');
-    			if (key) { window.bing_translate_api_key = key; }
-    			else { return false; }
-    		}
+                var key = prompt('Please enter your Bing Translate API Key which can be freely obtained from Microsoft. It will only be saved for this session. If you wish to permanently save this key, please edit this HTML file directly.');
+                if (key) { window.bing_translate_api_key = key; }
+                else { return false; }
+            }
         }
-		var segdocdata = $('td#segDetailID').html().match(docidpat2);
-		var segnum = parseInt(segdocdata[1])-1;
-		var docid = segdocdata[2];
-		$('tr#segDetailEngine').html('<td colspan="2" style="text-align: center; font-size: 14px;">Translating ...</td>')
+        var segdocdata = $('td#segDetailID').html().match(docidpat2);
+        var segnum = parseInt(segdocdata[1])-1;
+        var docid = segdocdata[2];
+        $('tr#segDetailEngine').html('<td colspan="2" style="text-align: center; font-size: 14px;">Translating ...</td>')
         if (engineName == "Google") {
-		  googleTranslate(srcSets[0].documents[docid][segnum]);
+          googleTranslate(srcSets[0].documents[docid][segnum]);
         }
         else {
             bingTranslate(srcSets[0].documents[docid][segnum], srcSets[0].srclang);
@@ -1001,7 +1091,7 @@ $(document).ready(function() {
         $('html, body').animate({
             scrollTop: $("tr#segDetailEngine").offset().top 
         }, 1000);
-	});
+    });
 });
 </script>
 </html>
