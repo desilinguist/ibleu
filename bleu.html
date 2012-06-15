@@ -326,15 +326,41 @@ function googleTranslate(text) {
     document.getElementsByTagName('head')[0].appendChild(newScript);
     document.getElementsByTagName('head')[0].removeChild(newScript);
     newScript = null;                   
-}
+} 
 
-function bingTranslate(text, srclang) {        
-    var newScript = document.createElement('script');
-    var source = "http://api.microsofttranslator.com/V2/Ajax.svc/Translate?oncomplete=showBingTranslation&contentType=text/html&appId=" + window.bing_translate_api_key + "&from=" + languageNameHash[srclang] + "&to=en&text=" + text;
-    newScript.src = source;
-    document.getElementsByTagName('head')[0].appendChild(newScript);
-    document.getElementsByTagName('head')[0].removeChild(newScript);
-    newScript = null;                   
+function bingTranslate(srctext, srclang) {        
+
+    // if we don't know the language then try to automatically detect it
+    if (srclang == "unknown") {
+        var p = {};
+        p.appid = window.bing_translate_api_key;
+        p.text = srctext;
+        srclang = $.ajax({
+            url: 'http://api.microsofttranslator.com/V2/Ajax.svc/Detect',
+            data: p,
+            type: 'GET',
+            cache: true,
+            dataType: 'jsonp',
+            jsonp: 'oncomplete',
+            success: function(data, status) {
+                var newScript = document.createElement('script');
+                var source = "http://api.microsofttranslator.com/V2/Ajax.svc/Translate?oncomplete=showBingTranslation&contentType=text/html&appId=" + window.bing_translate_api_key + "&from=" + data + "&to=en&text=" + p.text;
+                // alert(source);
+                newScript.src = source;
+                document.getElementsByTagName('head')[0].appendChild(newScript);
+                document.getElementsByTagName('head')[0].removeChild(newScript);
+                newScript = null;                           
+            }
+        });
+    } 
+    else {
+        var newScript = document.createElement('script');
+        var source = "http://api.microsofttranslator.com/V2/Ajax.svc/Translate?oncomplete=showBingTranslation&contentType=text/html&appId=" + window.bing_translate_api_key + "&from=" + languageNameHash[srclang] + "&to=en&text=" + srctext;
+        newScript.src = source;
+        document.getElementsByTagName('head')[0].appendChild(newScript);
+        document.getElementsByTagName('head')[0].removeChild(newScript);
+        newScript = null;                           
+    }
 }
 
 function showBingTranslation(response) {
@@ -677,7 +703,10 @@ $(document).ready(function() {
                 var txt = reader.result;
                 var srcSet = {};
                 srcSet.setid = "fakeset";
-                srcSet.sysid = "fakesys";
+                // Since we don't have the XML to tell us what the source language is, we'll set the
+                // source language to 'unknown' for now and then automatically detect it later if 
+                // we are asked to compare to Bing or Google and have the API key
+                srcSet.srclang = "unknown";
                 srcSet.documents = {};
                 srcSet.untokenizedDocuments = {};
                 var docid = "fakedoc";
@@ -845,6 +874,7 @@ $(document).ready(function() {
                         rset.documents[docid] = segs;
                         rset.untokenizedDocuments[docid] = originalSegs;
                     });
+                    refSets.push(rset);            
                 });                
             }
             else if (extension == "txt") {
@@ -862,8 +892,8 @@ $(document).ready(function() {
                 }
                 rset.documents[docid] = segs;
                 rset.untokenizedDocuments[docid] = originalSegs;
+                refSets.push(rset);
             }
-            refSets.push(rset);            
         }
         reader.readAsText(reffile);
     });

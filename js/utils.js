@@ -27,7 +27,7 @@ function findSymmetricYAxisLimits(segmentDiffsArray) {
     largestAbsoluteNegativeDiff = Math.max.apply(Math, negatives);
     largestPositiveDiff = Math.max.apply(Math, positives);
     limit = Math.max(largestAbsoluteNegativeDiff, largestPositiveDiff);
-    limit = Math.min(limit+0.05, 1.0)
+    limit = Math.min(limit+0.05, 1.0);
     return limit;
 }
 
@@ -56,7 +56,7 @@ function hashequal(me, other) {
         }
     }
     return true;
-};
+}
 
 // Validate each test set against all reference sets
 function validateTstAndRefs(tstSet, refSets) {
@@ -116,7 +116,7 @@ function validateTstAndOtherTst(tstSet1, tstSet2) {
 	// however, the sysid for both tstsets should NOT be the same
 	var tstSetSysId1 = tstSet1.sysid;
 	var tstSetSysId2 = tstSet2.sysid;
-	var cond2 = tstSetSysId1 != tstSetSysId2
+	var cond2 = tstSetSysId1 != tstSetSysId2;
 	
     // document ids are the same in both test sets?
     // AND
