@@ -43,7 +43,11 @@
   <br/>
   <table border="0">
     <tr>
-      <td align="center"><input type="checkbox" value="cased" name="caseCheckBox" id="caseCheckBox"/> Preserve case information</td></tr>
+      <td align="center">
+        <input type="checkbox" value="cased" name="caseCheckBox" id="caseCheckBox"/> Preserve case information
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="checkbox" value="tokenized" name="tokenizeCheckBox" id="tokenizeCheckBox"/> Do not tokenize
+      </td></tr>
       <tr><td>&nbsp;</td></tr>
       <tr><td>Compare to:
       <input type="radio" name="comparisonEngine" value="Google" id="comparisonEngine1" /> Google Translate
@@ -83,7 +87,7 @@ var scontainer;
 var scontainer2;
 var allDocPlots = [];
 var segmentScoreTuples = {};
-var docidpat = /DocID: (.*) \((.*)\)/;  
+var docidpat = /DocID: (.*) \((.*)\)/;
 var docidpat2 = /Segment (.*), Document "(.*)"/;
 
 // Create a hash that will give us the two letter code for any language
@@ -99,7 +103,7 @@ languageNameHash['Danish'] = 'da';
 languageNameHash['Hungarian'] = 'hu';
 languageNameHash['English'] = 'en';
 
-// If you want the tool to remember your Google Translate API key 
+// If you want the tool to remember your Google Translate API key
 // across sesions, please save it here
 var google_translate_api_key = "";
 
@@ -111,7 +115,7 @@ var bing_translate_api_key = "";
 function showScore(score, prec, brevity, sysid, srclang, numRefSets) {
   var elt = document.getElementById('bleuScoreDiv');
     var scorehtml = "<span style=\"font-size: 40px;\">" + (score*100).toFixed(2) + "</span><br/>" +
-        prec.toFixed(4) + " * " + brevity.toFixed(4) + "<br/>" + 
+        prec.toFixed(4) + " * " + brevity.toFixed(4) + "<br/>" +
         "<span style=\"font-size:12px;\">";
     if (srclang != undefined) {
         scorehtml += "[Source Language: " + srclang + "]<br/>";
@@ -152,36 +156,36 @@ function showSideBySideScores(scores, precisions, brevities, sysids, srclang, nu
         tr4 += "[Source Language: " + srclang + "]<br/>";
     }
     tr4 += "[" + numRefSets + " reference(s)]</tr></td>";
-    elt.innerHTML = "<table>" + tr1 + tr2 + tr3 + trblank + tr4 + "</table>";        
+    elt.innerHTML = "<table>" + tr1 + tr2 + tr3 + trblank + tr4 + "</table>";
 }
 
 
 // Show the details (individual and cumulative) precisions in a table
 function showTable(individualNgramScores, cumulativeNgramScores) {
     var elt = document.getElementById('bleuTableDiv');
-    elt.innerHTML = "<span style=\"font-size:12px;\">Breakdown of scores (<a href=\"\" class=\"jslink\" id=\"tableHider\">Show</a>)</span><br/>" + 
-                    "<table id=\"bleuTable\" border=1>" + 
-                     "<tr align=\"center\">" + 
-                       "<th>Type</th>" + 
-                       "<th>1-gram</th>" + 
-                       "<th>2-gram</th>" + 
-                       "<th>3-gram</th>" + 
-                       "<th>4-gram</th>" + 
-                     "</tr>" + 
-                 "<tr>" + 
-                       "<td>Individual</td>" + 
-                       "<td>" + individualNgramScores[1].toFixed(4) + "</td>" +  
-                       "<td>" + individualNgramScores[2].toFixed(4) + "</td>" +  
-                       "<td>" + individualNgramScores[3].toFixed(4) + "</td>" +  
-                       "<td>" + individualNgramScores[4].toFixed(4) + "</td>" +  
-                     "</tr>" + 
+    elt.innerHTML = "<span style=\"font-size:12px;\">Breakdown of scores (<a href=\"\" class=\"jslink\" id=\"tableHider\">Show</a>)</span><br/>" +
+                    "<table id=\"bleuTable\" border=1>" +
+                     "<tr align=\"center\">" +
+                       "<th>Type</th>" +
+                       "<th>1-gram</th>" +
+                       "<th>2-gram</th>" +
+                       "<th>3-gram</th>" +
+                       "<th>4-gram</th>" +
+                     "</tr>" +
+                 "<tr>" +
+                       "<td>Individual</td>" +
+                       "<td>" + individualNgramScores[1].toFixed(4) + "</td>" +
+                       "<td>" + individualNgramScores[2].toFixed(4) + "</td>" +
+                       "<td>" + individualNgramScores[3].toFixed(4) + "</td>" +
+                       "<td>" + individualNgramScores[4].toFixed(4) + "</td>" +
+                     "</tr>" +
                       "<tr>" +
-                       "<td>Cumulative</td>" + 
-                       "<td>" + cumulativeNgramScores[1].toFixed(4) + "</td>" +  
-                       "<td>" + cumulativeNgramScores[2].toFixed(4) + "</td>" +  
-                       "<td>" + cumulativeNgramScores[3].toFixed(4) + "</td>" +  
-                       "<td>" + cumulativeNgramScores[4].toFixed(4) + "</td>" +  
-                       "</tr>" + 
+                       "<td>Cumulative</td>" +
+                       "<td>" + cumulativeNgramScores[1].toFixed(4) + "</td>" +
+                       "<td>" + cumulativeNgramScores[2].toFixed(4) + "</td>" +
+                       "<td>" + cumulativeNgramScores[3].toFixed(4) + "</td>" +
+                       "<td>" + cumulativeNgramScores[4].toFixed(4) + "</td>" +
+                       "</tr>" +
                        "</table>";
 }
 
@@ -191,7 +195,7 @@ function showSegDetails(event) {
   var docid = this.name.match(docidpat)[1];
   var bleu = event.point.y.toFixed(2);
   var lengths = [tstSets[0].documents[docid][segnum].split(" ").length];
-  
+
   // Compute average reference length
   var reflens = refSets.map(function(rset) { return rset.documents[docid][segnum].split(" ").length; });
   lengths = lengths.concat(reflens);
@@ -199,7 +203,7 @@ function showSegDetails(event) {
 
   // Compute the length ratio of the segment length to the average reference length
   var lenratio = lengths[0]/avgreflen;
-  
+
   $('#segDetailContainer').show();
 
     var elt = document.getElementById('segDetailContainer');
@@ -228,80 +232,80 @@ function showSegDetails(event) {
 
   // show the header for the table
     if (tstSets[1] != undefined) {
-        var tablehtml = '<table border="1" style="margin: 0px auto; width: 700px;">' + 
-                        '<tr>' + 
-                            '<td align="center" id="segDetailHeader" width="20%">ID</td>' + 
-                            '<td align="left" id="segDetailID">Segment ' + (segnum+1) + ', Document "' + docid + '"' + 
+        var tablehtml = '<table border="1" style="margin: 0px auto; width: 700px;">' +
+                        '<tr>' +
+                            '<td align="center" id="segDetailHeader" width="20%">ID</td>' +
+                            '<td align="left" id="segDetailID">Segment ' + (segnum+1) + ', Document "' + docid + '"' +
                             ' [&Delta;<sub>BLEU</sub>=' + bleu + ']</td>' +
-                        '</tr>';        
+                        '</tr>';
     }
     else {
-        var tablehtml = '<table border="1" style="margin: 0px auto; width: 700px;">' + 
-                        '<tr>' + 
-                            '<td align="center" id="segDetailHeader" width="20%">ID</td>' + 
-                            '<td align="left" id="segDetailID">Segment ' + (segnum+1) + ', Document "' + docid + '"' + 
+        var tablehtml = '<table border="1" style="margin: 0px auto; width: 700px;">' +
+                        '<tr>' +
+                            '<td align="center" id="segDetailHeader" width="20%">ID</td>' +
+                            '<td align="left" id="segDetailID">Segment ' + (segnum+1) + ', Document "' + docid + '"' +
                             ' [' + bleu + ' BLEU, '+ lenratio.toFixed(3) + ' Length Ratio]</td>' +
-                        '</tr>';        
+                        '</tr>';
     }
-    
+
     // Add the source sentence, if availble
     if (srcSets.length > 0) {
         var src = srcSets[0].documents[docid][segnum];
-        tablehtml += '<tr>' + 
-                     '<td align="center" id="segDetailHeader">Source</td>' + 
+        tablehtml += '<tr>' +
+                     '<td align="center" id="segDetailHeader">Source</td>' +
                      '<td id="segDetailSrc">' + src + '</td>' +
-                     '</tr>';               
+                     '</tr>';
     }
 
-    // Add all the references               
+    // Add all the references
     for(var i=0; i < refSets.length; i++) {
     if (tstSets[1] != undefined) {
       var ref = refSets[i].untokenizedDocuments[docid][segnum];
       ref = $('#caseCheckBox').attr('checked') ? ref : ref.toLowerCase();
-      tablehtml += '<tr>' + 
-                 '<td align="center" id="segDetailHeader">Reference<br/>(' + refSets[i].refid + ')</td>' + 
+      tablehtml += '<tr>' +
+                 '<td align="center" id="segDetailHeader">Reference<br/>(' + refSets[i].refid + ')</td>' +
                  '<td id="segDetailRef' + i + '">' + ref + '</td>' +
-                   '</tr>';             
+                   '</tr>';
     }
     else {
       var tokref = refSets[i].documents[docid][segnum];
       tokref = $('#caseCheckBox').attr('checked') ? tokref : tokref.toLowerCase();
       ref_html = lcsColorize(tokref, refLCSLists[i], '#CC3333');
-      tablehtml += '<tr>' + 
-                 '<td align="center" id="segDetailHeader">Reference<br/>(' + refSets[i].refid + ')</td>' + 
+      tablehtml += '<tr>' +
+                 '<td align="center" id="segDetailHeader">Reference<br/>(' + refSets[i].refid + ')</td>' +
                  '<td id="segDetailRef' + i + '">' + ref_html + '</td>' +
-                   '</tr>';           
+                   '</tr>';
     }
     }
-    
+
     // Add the hypothesis or hypotheses as the case may be
     if (tstSets[1] != undefined) {
-        tokhyp1 = $('#caseCheckBox').attr('checked') ? tokhyp1 : tokhyp1.toLowerCase(); 
-      hyp1_html = lcsColorize(tokhyp1, lcslist.xindices, 'blue');
-        tablehtml += '<tr>' + 
-                 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
-                 '<td id="segDetailHyp">' + hyp1_html + '<span style="font-size: 11px;"> [' + segmentScoreTuples[docid][segnum][0].toFixed(2) + ']</span></td>' + 
+        tokhyp1 = $('#caseCheckBox').attr('checked') ? tokhyp1 : tokhyp1.toLowerCase();
+        hyp1_html = lcsColorize(tokhyp1, lcslist.xindices, 'blue');
+        tablehtml += '<tr>' +
+                 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' +
+                 '<td id="segDetailHyp">' + hyp1_html + '<span style="font-size: 11px;"> [' + segmentScoreTuples[docid][segnum][0].toFixed(2) + ']</span></td>' +
                  '</tr>';
 
         // hyp = tstSets[1].untokenizedDocuments[docid][segnum];
-        tokhyp2 = $('#caseCheckBox').attr('checked') ? tokhyp2 : tokhyp2.toLowerCase(); 
-      hyp2_html = lcsColorize(tokhyp2, lcslist.yindices, 'blue');
-        tablehtml += '<tr>' + 
-                 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[1].sysid + ')</td>' + 
-                 '<td id="segDetailHyp">' + hyp2_html + '<span style="font-size: 11px;"> [' + segmentScoreTuples[docid][segnum][1].toFixed(2) + ']</span></td>' + 
-                 '</tr>';       
+        tokhyp2 = $('#caseCheckBox').attr('checked') ? tokhyp2 : tokhyp2.toLowerCase();
+        hyp2_html = lcsColorize(tokhyp2, lcslist.yindices, 'blue');
+        tablehtml += '<tr>' +
+                 '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[1].sysid + ')</td>' +
+                 '<td id="segDetailHyp">' + hyp2_html + '<span style="font-size: 11px;"> [' + segmentScoreTuples[docid][segnum][1].toFixed(2) + ']</span></td>' +
+                 '</tr>';
     }
     else {
         var hyp = tstSets[0].untokenizedDocuments[docid][segnum];
-      tokhyp = $('#caseCheckBox').attr('checked') ? tokhyp : tokhyp.toLowerCase(); 
-      hyp_html = lcsColorize(tokhyp, hypLCSList, '#CC3333');
-        tablehtml += '<tr>' + 
-             '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' + 
-             '<td id="segDetailHyp">' + hyp_html + '</td>' + 
+        tokhyp = $('#caseCheckBox').attr('checked') ? tokhyp : tokhyp.toLowerCase();
+        hyp_html = lcsColorize(tokhyp, hypLCSList, '#CC3333');
+        tablehtml += '<tr>' +
+             '<td align="center" id="segDetailHeader">Hypothesis<br/>(' + tstSets[0].sysid + ')</td>' +
+             '<td id="segDetailHyp">' + hyp_html + '</td>' +
              '</tr>';
 
     }
-                
+
     // Show a google/bing translate link if there is a source file
     if (srcSets.length > 0) {
         var engineName = $('input[name=comparisonEngine]:checked').val();
@@ -309,12 +313,12 @@ function showSegDetails(event) {
             tablehtml += '<tr id="segDetailEngine"><td style="text-align:center; font-size: 14px;" colspan=2><a href="#" class="jslink" id="engineTranslate">What does ' + engineName + ' say?</a></td></tr>';
         }
     }
-    
+
     tablehtml += '</table>';
     elt.innerHTML = tablehtml;
 
   $('html, body').animate({
-    scrollTop: $("#segDetailContainer").offset().top 
+    scrollTop: $("#segDetailContainer").offset().top
   }, 1000);
 }
 
@@ -325,10 +329,10 @@ function googleTranslate(text) {
     newScript.src = source;
     document.getElementsByTagName('head')[0].appendChild(newScript);
     document.getElementsByTagName('head')[0].removeChild(newScript);
-    newScript = null;                   
-} 
+    newScript = null;
+}
 
-function bingTranslate(srctext, srclang) {        
+function bingTranslate(srctext, srclang) {
 
     // if we don't know the language then try to automatically detect it
     if (srclang == "unknown") {
@@ -349,24 +353,24 @@ function bingTranslate(srctext, srclang) {
                 newScript.src = source;
                 document.getElementsByTagName('head')[0].appendChild(newScript);
                 document.getElementsByTagName('head')[0].removeChild(newScript);
-                newScript = null;                           
+                newScript = null;
             }
         });
-    } 
+    }
     else {
         var newScript = document.createElement('script');
         var source = "http://api.microsofttranslator.com/V2/Ajax.svc/Translate?oncomplete=showBingTranslation&contentType=text/html&appId=" + window.bing_translate_api_key + "&from=" + languageNameHash[srclang] + "&to=en&text=" + srctext;
         newScript.src = source;
         document.getElementsByTagName('head')[0].appendChild(newScript);
         document.getElementsByTagName('head')[0].removeChild(newScript);
-        newScript = null;                           
+        newScript = null;
     }
 }
 
 function showBingTranslation(response) {
     var translation = response;
     var finalTranslation = $('#caseCheckBox').attr('checked') ? translation : translation.toLowerCase();
-    var tdhtml = '<td width="20%" id="segDetailHeader">Bing</td>' + 
+    var tdhtml = '<td width="20%" id="segDetailHeader">Bing</td>' +
                   '<td id="segDetailEngineTrans">' + finalTranslation + '</td>';
     $('tr#segDetailEngine').html(tdhtml);
 }
@@ -374,7 +378,7 @@ function showBingTranslation(response) {
 function showGoogleTranslation(response) {
     var translation = response.data.translations[0].translatedText;
     var finalTranslation = $('#caseCheckBox').attr('checked') ? translation : translation.toLowerCase();
-    var tdhtml = '<td width="20%" id="segDetailHeader">Google</td>' + 
+    var tdhtml = '<td width="20%" id="segDetailHeader">Google</td>' +
                   '<td id="segDetailEngineTrans">' + finalTranslation + '</td>';
     $('tr#segDetailEngine').html(tdhtml);
 }
@@ -428,7 +432,7 @@ function makeColumnChart(plotdiv, yscores, xticks, label, smallOrBig, ymin, ymax
             animation: showAnimation,
             borderRadius: 5,
             events: clickCallback
-        },                  
+        },
         title: {
             text: ''
         },
@@ -502,7 +506,7 @@ function createDocPlotsData(documentScores, segmentScores) {
     }
 
     // Create the data for segment scores for each document plot
-    for (var j=0; j<segmentScores.length; j++) { 
+    for (var j=0; j<segmentScores.length; j++) {
         var so = segmentScores[j];
         alldScores[docIdNumHash[so.docid]].push(so.score);
     }
@@ -531,15 +535,15 @@ function createDocPlotsDataForComparison(documentScores1, segmentScores1, docume
   var docIdNumHash = {};
 
     // Compute the differences in the document scores ...
-    for (docid in documentScores1) { 
+    for (docid in documentScores1) {
         documentScoreDiffs[docid] = documentScores1[docid] - documentScores2[docid];
     }
 
     // ... and the segment scores
   for (var j=0; j<segmentScores1.length; j++) {
     var sd = {};
-    var score1 = segmentScores1[j].score; 
-    var score2 = segmentScores2[j].score; 
+    var score1 = segmentScores1[j].score;
+    var score2 = segmentScores2[j].score;
     var diff = score1 - score2;
     sd.diff = diff;
     sd.docid = segmentScores1[j].docid;
@@ -567,7 +571,7 @@ function createDocPlotsDataForComparison(documentScores1, segmentScores1, docume
     for (var i=0; i<tuples.length; i++) {
         sortedDocIDs.push(tuples[i][0]);
     }
-    
+
     // Create the labels for each plot (the document score differences)
     var i = 0;
     var label;
@@ -595,12 +599,12 @@ function createDocPlotsDataForComparison(documentScores1, segmentScores1, docume
             alldTicks[k].push(l);
         }
     }
-    
-    // return everything    
+
+    // return everything
     return [alldScores, alldTicks, docScoreLabels];
 }
 
-function showLargerPlot(event) { 
+function showLargerPlot(event) {
 
     var plotNumber = $(this.container).parent().attr('id').slice(-3);
 
@@ -613,7 +617,7 @@ function showLargerPlot(event) {
 
     for (var i=0; i<data.length; i++) {
         yscores.push(data[i].y);
-        xticks.push(data[i].x+1);  
+        xticks.push(data[i].x+1);
     }
 
     var ymin = series.yAxis.getExtremes().min;
@@ -625,7 +629,7 @@ function showLargerPlot(event) {
     // clear any segment details
     $('#segDetailContainer').html("");
     $('html, body').animate({
-        scrollTop: $("#bleuSegPlotContainer").offset().top 
+        scrollTop: $("#bleuSegPlotContainer").offset().top
     }, 1000);
 
 }
@@ -638,8 +642,9 @@ $(document).ready(function() {
       .not(':radio')
       .val('');
 
-    // Clear the checkbox
+    // Clear the checkboxes
     $('#caseCheckBox').attr('checked', false);
+    $('#tokenizeCheckBox').attr('checked', false);
 
     // Set the radio buttons to 'none' by default and disable the other two
     $('input[name=comparisonEngine]').filter('#comparisonEngine1').attr('disabled', 'disabled')
@@ -657,9 +662,9 @@ $(document).ready(function() {
     $('#bleuDocPlotsContainer').hide();
     $('#bleuSegPlotContainer').hide();
 
-    // Clear any stray tooltips 
+    // Clear any stray tooltips
     // $("#tooltip").remove();
-    
+
     // Hide any segment details
     $('#segDetailContainer').html("");
 
@@ -673,13 +678,13 @@ $(document).ready(function() {
         srcSets = [];
         var srcfile = e.target.files[0];
         var reader = new FileReader();
-        reader.onload = function() { 
+        reader.onload = function() {
             var extension = srcfile.name.split('.').pop();
 
             // if the extension is ".xml" then process the xml file
             if (extension == 'xml') {
                 var xml = reader.result;
-                var sset = $('srcset', xml); 
+                var sset = $('srcset', xml);
 
                 // Get the set and system ids
                 var srcSet = {};
@@ -692,9 +697,9 @@ $(document).ready(function() {
                   var docid = $(this).attr("docid");
                   var segs = [];
                   $(this).find("seg").each(function (seg) {
-                      //var segid = $(this).attr("id");
-                      segs.push($(this).text());
-                      // segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
+                    //var segid = $(this).attr("id");
+                    segs.push($(this).text());
+                    // segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
                   });
                   srcSet.documents[docid] = segs;
                 });
@@ -704,7 +709,7 @@ $(document).ready(function() {
                 var srcSet = {};
                 srcSet.setid = "fakeset";
                 // Since we don't have the XML to tell us what the source language is, we'll set the
-                // source language to 'unknown' for now and then automatically detect it later if 
+                // source language to 'unknown' for now and then automatically detect it later if
                 // we are asked to compare to Bing or Google and have the API key
                 srcSet.srclang = "unknown";
                 srcSet.documents = {};
@@ -713,18 +718,17 @@ $(document).ready(function() {
                 var segs = [];
                 var originalSegs = txt.split('\n').slice(0, -1);
                 for (var i=0; i < originalSegs.length; i++) {
-                    segs.push(tokenize(originalSegs[i], $('#caseCheckBox').attr('checked')));
+                    segs.push(originalSegs[i]);
                 }
                 srcSet.documents[docid] = segs;
-                srcSet.untokenizedDocuments[docid] = originalSegs;
             }
             srcSets.push(srcSet);
-            
+
             // Enable the Bing/Google radio buttons if the source file has been parsed successfully
             if (srcSets.length > 0) {
                 $('input[name=comparisonEngine]').filter('#comparisonEngine1').removeAttr('disabled');
                 $('input[name=comparisonEngine]').filter('#comparisonEngine2').removeAttr('disabled');
-            }    
+            }
         }
         reader.readAsText(srcfile);
     });
@@ -734,16 +738,14 @@ $(document).ready(function() {
     $('#tstFile').change(function (e) {
         var tstfile = e.target.files[0];
         var reader = new FileReader();
-        reader.onload = function() { 
+        reader.onload = function() {
             var extension = tstfile.name.split('.').pop();
-            var xml = reader.result;
-            var tset = $('tstset', xml); 
 
             // if the extension is ".xml" then process the xml file
             if (extension == 'xml') {
                 var xml = reader.result;
-                var tset = $('tstset', xml); 
-    
+                var tset = $('tstset', xml);
+
                 // Get the set and system ids
                 var tstSet = {};
                 tstSet.setid = tset.attr("setid");
@@ -756,9 +758,14 @@ $(document).ready(function() {
                     var segs = [];
                     var originalSegs = [];
                     $(this).find("seg").each(function (seg) {
-                        //var segid = $(this).attr("id");
+                      //var segid = $(this).attr("id");
+                      if ($('#tokenizeCheckBox').attr('checked')) {
+                        segs.push($(this).text());
+                      }
+                      else {
                         segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
-                        originalSegs.push($(this).text());
+                      }
+                      originalSegs.push($(this).text());
                     });
                     tstSet.documents[docid] = segs;
                     tstSet.untokenizedDocuments[docid] = originalSegs;
@@ -775,25 +782,30 @@ $(document).ready(function() {
                 var segs = [];
                 var originalSegs = txt.split('\n').slice(0, -1);
                 for (var i=0; i < originalSegs.length; i++) {
+                  if ($('#tokenizeCheckBox').attr('checked')) {
+                    segs.push(originalSegs[i]);
+                  }
+                  else {
                     segs.push(tokenize(originalSegs[i], $('#caseCheckBox').attr('checked')));
+                  }
                 }
                 tstSet.documents[docid] = segs;
                 tstSet.untokenizedDocuments[docid] = originalSegs;
             }
             tstSets[0] = tstSet;
-        }     
+        }
         reader.readAsText(tstfile);
         $('#secondHypLink').css('display', 'inline');
     });
     $('#tstFile2').change(function (e) {
         var tstfile = e.target.files[0];
         var reader = new FileReader();
-        reader.onload = function() { 
+        reader.onload = function() {
             var extension = tstfile.name.split('.').pop();
 
             if (extension == "xml") {
                 var xml = reader.result;
-                var tset = $('tstset', xml); 
+                var tset = $('tstset', xml);
 
                 // Get the set and system ids
                 var tstSet = {};
@@ -808,9 +820,13 @@ $(document).ready(function() {
                     var segs = [];
                     var originalSegs = [];
                     $(this).find("seg").each(function (seg) {
-                        //var segid = $(this).attr("id");
+                      //var segid = $(this).attr("id");
+                      if ($('#tokenizeCheckBox').attr('checked')) {
                         segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
-                        originalSegs.push($(this).text());
+                      }
+                      else {
+                        segs.push($(this).text());
+                      }
                     });
                     tstSet.documents[docid] = segs;
                     tstSet.untokenizedDocuments[docid] = originalSegs;
@@ -827,13 +843,18 @@ $(document).ready(function() {
                 var segs = [];
                 var originalSegs = txt.split('\n').slice(0, -1);
                 for (var i=0; i < originalSegs.length; i++) {
+                  if ($('#tokenizeCheckBox').attr('checked')) {
+                    segs.push(originalSegs[i]);
+                  }
+                  else {
                     segs.push(tokenize(originalSegs[i], $('#caseCheckBox').attr('checked')));
+                  }
                 }
                 tstSet.documents[docid] = segs;
                 tstSet.untokenizedDocuments[docid] = originalSegs;
             }
-            tstSets[1] = tstSet;                            
-        }     
+            tstSets[1] = tstSet;
+        }
         reader.readAsText(tstfile);
     });
 
@@ -843,7 +864,7 @@ $(document).ready(function() {
         refSets = [];
         var reffile = e.target.files[0];
         var reader = new FileReader();
-        reader.onload = function() { 
+        reader.onload = function() {
 
             var extension = reffile.name.split('.').pop();
 
@@ -852,7 +873,7 @@ $(document).ready(function() {
                 var xml = reader.result;
 
                 // Process each refset
-                $('refset', xml).each(function(refset) { 
+                $('refset', xml).each(function(refset) {
                     var rset = {};
 
                     // Get the refid and setid for this refset
@@ -866,16 +887,21 @@ $(document).ready(function() {
                         var docid = $(this).attr("docid");
                         var segs = [];
                         var originalSegs = [];
-                        $(this).find("seg").each(function(seg) { 
-                            //var segid = $(this).attr("id");
+                        $(this).find("seg").each(function(seg) {
+                          //var segid = $(this).attr("id");
+                          if ($('#tokenizeCheckBox').attr('checked')) {
+                            segs.push($(this).text());
+                          }
+                          else {
                             segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
-                            originalSegs.push($(this).text());
+                          }
+                          originalSegs.push($(this).text());
                         });
                         rset.documents[docid] = segs;
                         rset.untokenizedDocuments[docid] = originalSegs;
                     });
-                    refSets.push(rset);            
-                });                
+                    refSets.push(rset);
+                });
             }
             else if (extension == "txt") {
                 var txt = reader.result;
@@ -888,7 +914,12 @@ $(document).ready(function() {
                 var segs = [];
                 var originalSegs = txt.split('\n').slice(0, -1);
                 for (var i=0; i < originalSegs.length; i++) {
+                  if ($('#tokenizeCheckBox').attr('checked')) {
+                    segs.push(originalSegs[i]);
+                  }
+                  else {
                     segs.push(tokenize(originalSegs[i], $('#caseCheckBox').attr('checked')));
+                  }
                 }
                 rset.documents[docid] = segs;
                 rset.untokenizedDocuments[docid] = originalSegs;
@@ -907,7 +938,7 @@ $(document).ready(function() {
         if (tstSets.length > 0 && refSets.length > 0) {
 
             // validate each test set against the source set, if the latter is present
-            if (srcSets.length > 0) { 
+            if (srcSets.length > 0) {
                 for (var i=0; i<tstSets.length; i++) {
                     var tset = tstSets[i];
                     if (tset != undefined) {
@@ -918,7 +949,7 @@ $(document).ready(function() {
                     }
                 }
             }
-            
+
             // validate each tet set against the reference set
             for (var i=0; i<tstSets.length; i++) {
                 var tset = tstSets[i];
@@ -929,7 +960,7 @@ $(document).ready(function() {
                     }
                 }
             }
-        
+
             // also validate the two test sets against each other
             if (tstSets[1] != undefined) {
                 if (!validateTstAndOtherTst(tstSets[0], tstSets[1])) {
@@ -943,15 +974,15 @@ $(document).ready(function() {
             $('#bleuDocPlotsContainer').html("");
         $('#bleuDocPlotsContainer').hide();
         $('#bleuSegPlotContainer').hide();
-          $('#segDetailContainer').html("");      
+          $('#segDetailContainer').html("");
       allDocPlots = [];
-            
+
             var scores = [];
             var brevities = [];
             var precisions = [];
-            var sysids = [];            
+            var sysids = [];
             var srclang = srcSets.length > 0 ? srcSets[0].srclang : undefined;
-            
+
       // Compute the bleu scores for the first system ...
         scontainer = scoreSystem(tstSets[0], refSets);
       for (sysid in scontainer.bleuObjects) {
@@ -1001,7 +1032,7 @@ $(document).ready(function() {
                 $('#bleuDocPlotsContainer').css('width', 700);
                 $('#bleuDocPlotsContainer').css('height', 150);
 
-                // get data for all doc plots together, either as score differences or raw scores 
+                // get data for all doc plots together, either as score differences or raw scores
                 // depending on whether there are 1 or 2 systems
                 var docPlotArray;
                 var ymin, ymax;
@@ -1052,19 +1083,38 @@ $(document).ready(function() {
         }
     });
     $('#caseCheckBox').click(function(e) {
-        
+
         // Store the previous state of the compare link
         var prevLinkValue = $('a#secondHypLink').css('display');
 
         if (tstSets.length > 0) {
             $('#tstFile').trigger('change');
-            
+
             if (tstSets[1] != undefined) {
-                $('#tstFile2').trigger('change');           
+                $('#tstFile2').trigger('change');
             }
-                        
+
             // Make sure that the compare link retains its state
-            $('a#secondHypLink').css('display', prevLinkValue);         
+            $('a#secondHypLink').css('display', prevLinkValue);
+        }
+        if (refSets.length > 0) {
+            $('#refFile').trigger('change');
+        }
+    });
+    $('#tokenizeCheckBox').click(function(e) {
+
+        // Store the previous state of the compare link
+        var prevLinkValue = $('a#secondHypLink').css('display');
+
+        if (tstSets.length > 0) {
+            $('#tstFile').trigger('change');
+
+            if (tstSets[1] != undefined) {
+                $('#tstFile2').trigger('change');
+            }
+
+            // Make sure that the compare link retains its state
+            $('a#secondHypLink').css('display', prevLinkValue);
         }
         if (refSets.length > 0) {
             $('#refFile').trigger('change');
@@ -1095,14 +1145,14 @@ $(document).ready(function() {
         e.preventDefault();
         var engineName = $('input[name=comparisonEngine]:checked').val();
         if (engineName == "Google") {
-            if (!window.google_translate_api_key) { 
+            if (!window.google_translate_api_key) {
                 var key = prompt('Please enter your Google Translate API Key which can be freely obtained from Google. It will only be saved for this session. If you wish to permanently save this key, please edit this HTML file directly.');
                 if (key) { window.google_translate_api_key = key; }
                 else { return false; }
-            }                       
+            }
         }
         else {
-            if (!window.bing_translate_api_key) { 
+            if (!window.bing_translate_api_key) {
                 var key = prompt('Please enter your Bing Translate API Key which can be freely obtained from Microsoft. It will only be saved for this session. If you wish to permanently save this key, please edit this HTML file directly.');
                 if (key) { window.bing_translate_api_key = key; }
                 else { return false; }
@@ -1119,7 +1169,7 @@ $(document).ready(function() {
             bingTranslate(srcSets[0].documents[docid][segnum], srcSets[0].srclang);
         }
         $('html, body').animate({
-            scrollTop: $("tr#segDetailEngine").offset().top 
+            scrollTop: $("tr#segDetailEngine").offset().top
         }, 1000);
     });
 });
