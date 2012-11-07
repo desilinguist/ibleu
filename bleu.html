@@ -836,7 +836,7 @@ $(document).ready(function() {
                 var txt = reader.result;
                 var tstSet = {};
                 tstSet.setid = "fakeset";
-                tstSet.sysid = "fakesys";
+                tstSet.sysid = "fakesys2";
                 tstSet.documents = {};
                 tstSet.untokenizedDocuments = {};
                 var docid = "fakedoc";
@@ -943,7 +943,7 @@ $(document).ready(function() {
                     var tset = tstSets[i];
                     if (tset != undefined) {
                         if (!validateTstAndSrc(tset, srcSets[0])) {
-                            alert("Error: the hypothesis XML file (sysid: " + tset.sysid + ") and the source XML file do not match up");
+                            alert("Error: the hypothesis file (sysid: " + tset.sysid + ") and the source file do not match up");
                             return false;
                         }
                     }
@@ -955,7 +955,7 @@ $(document).ready(function() {
                 var tset = tstSets[i];
                 if (tset != undefined) {
                     if (!validateTstAndRefs(tset, refSets)) {
-                        alert("Error: the hypothesis XML file (sysid: " + tset.sysid + ") and one (or more) of the reference XML files do not match up");
+                        alert("Error: the hypothesis file (sysid: " + tset.sysid + ") and one (or more) of the reference files do not match up");
                         return false;
                     }
                 }
@@ -964,7 +964,7 @@ $(document).ready(function() {
             // also validate the two test sets against each other
             if (tstSets[1] != undefined) {
                 if (!validateTstAndOtherTst(tstSets[0], tstSets[1])) {
-                    alert("Error: the hypothesis XMLs do not match up (should have same document IDs, same set IDs but different sys IDs.")
+                    alert("Error: the hypothesis files do not match up (should have same document IDs, same set IDs but different sys IDs.")
                     return false;
                 }
             }
@@ -1079,7 +1079,7 @@ $(document).ready(function() {
             }
         }
         else {
-            alert('Please load both the hypothesis and reference xml files.');
+            alert('Please load both the hypothesis and reference files.');
         }
     });
     $('#caseCheckBox').click(function(e) {
