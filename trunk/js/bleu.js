@@ -15,7 +15,7 @@ function pause(milliseconds) {
 
 // A utility function to create zero-filled arrays or hashes of a pre-stipulated length
 function zeroArray(length, type) {
-    var arr = new type;
+    var arr = new type();
     for (var i = 0; i < length; i++) {
         arr[i] = 0;
     }
@@ -23,8 +23,8 @@ function zeroArray(length, type) {
 }
 
 // Utility functions that compute the max and min over an array
-Array.max = function (arr) { return Math.max.apply(Math, arr); }
-Array.min = function (arr) { return Math.min.apply(Math, arr); }
+Array.max = function (arr) { return Math.max.apply(Math, arr); };
+Array.min = function (arr) { return Math.min.apply(Math, arr); };
 
 // A function to tokenize a sentence (from mteval)
 function tokenize(sentence, preserve_case) {
@@ -44,18 +44,18 @@ function tokenize(sentence, preserve_case) {
     if (!preserve_case)
         sentence = sentence.toLowerCase();
     sentence = sentence.replace(/([\{\~\[\]\"\`\?\&\(\)\+\:\;\$\@\/\}])/g, ' $1 ');
-    sentence = sentence.replace(/([^0-9])([\.,])/g, '$1 $2 '); 
-    sentence = sentence.replace(/([\.,])([^0-9])/g,' $1 $2'); 
-    sentence = sentence.replace(/([0-9])(\-)/g, '$1 $2 '); 
-    sentence = sentence.replace(/\s+/g, ' '); 
-    sentence = sentence.replace(/^\s+/, ''); 
-    sentence = sentence.replace(/\s+$/, ''); 
+    sentence = sentence.replace(/([^0-9])([\.,])/g, '$1 $2 ');
+    sentence = sentence.replace(/([\.,])([^0-9])/g,' $1 $2');
+    sentence = sentence.replace(/([0-9])(\-)/g, '$1 $2 ');
+    sentence = sentence.replace(/\s+/g, ' ');
+    sentence = sentence.replace(/^\s+/, '');
+    sentence = sentence.replace(/\s+$/, '');
 
     return sentence;
 }
 
 //A general bleu computing function given the following arguments:
-//1. The representative reference length (reflength), 
+//1. The representative reference length (reflength),
 //2. The number of n-grams that match between hypothesis and references for each n (ngramMatches),
 //3. How many hypothesis n-grams there are for each n (numTstNgrams)
 //4. Whether or not to compute smoothed BLEU scores (smoothed)
@@ -68,11 +68,11 @@ function generalComputeBLEU(reflength, ngramMatches, numTstNgrams, smoothed, ord
     // compute the non-exponentiated individual ngram scores
     var scores =[undefined];
     var smoothlevel = 1;
-    for (var i=1; i <= order; i++) { 
-        if (numTstNgrams[i] == 0) {
+    for (var i=1; i <= order; i++) {
+        if (numTstNgrams[i] === 0) {
             scores.push(0);
         }
-        else if (ngramMatches[i] == 0) {
+        else if (ngramMatches[i] === 0) {
             scores.push(smoothed ? Math.log(1 / (Math.pow(2,smoothlevel) * numTstNgrams[i])): -Infinity);
             smoothlevel += 1;
         }
@@ -82,17 +82,17 @@ function generalComputeBLEU(reflength, ngramMatches, numTstNgrams, smoothed, ord
     }
 
     // compute the cumulative ngram precisions
-    var prec = [undefined]
+    var prec = [undefined];
     var sum = 0.0;
-    for (i=1; i <= order; i++) { 
+    for (i=1; i <= order; i++) {
         sum = scores.slice(1, i+1).reduce(function (x,y) { return x+y; });
         prec.push(Math.exp(sum/i));
     }
-    
+
     // compute the exponentiated individual ngram scores
     var individual = scores.map(Math.exp);
 
-    // compute the exponentiated cumulative ngram BLEU scores: 
+    // compute the exponentiated cumulative ngram BLEU scores:
     // multiply the cumulative precisions by the brevity penalty
     var cumulative = prec.map(function(x) { return x * brevity; });
 
@@ -122,7 +122,7 @@ function bleuScoreObject(order, smoothed) {
     this.ngramMatches = [undefined].concat(zeroArray(order, Array));
 
     // To update my stats from another bleuObject, use the update method
-    this.update = function(otherBleuObject) { 
+    this.update = function(otherBleuObject) {
         for (var n=0; n <= this.order; n++) {
             this.ngramMatches[n] += otherBleuObject.ngramMatches[n];
             this.numTstNgrams[n] += otherBleuObject.numTstNgrams[n];
@@ -135,7 +135,7 @@ function bleuScoreObject(order, smoothed) {
 
         // call the general BLEU function and get everything we need
         var bleuResults = generalComputeBLEU(this.reflength, this.ngramMatches, this.numTstNgrams, this.smoothed, this.order);
-        
+
         this.brevity = bleuResults[0];
         this.ngramScores = bleuResults[1];
         this.precisions = bleuResults[2];
@@ -195,11 +195,11 @@ function scoreSegment(docid, segnum, tstSegment, refSegments, docBleuObj, sConta
         var refNgrams = Words2Ngrams(refWords);
 
         // Clip final count for each n-gram to maximum # of occurrences in any of the references
-        for (ngram in refNgrams) {
+        for (var ngram in refNgrams) {
             clippedRefNgrams[ngram] = isUndefined(clippedRefNgrams[ngram]) ? refNgrams[ngram] : Math.max(clippedRefNgrams[ngram], refNgrams[ngram]);
         }
 
-        // Update total number of unigrams, bigrams etc. 
+        // Update total number of unigrams, bigrams etc.
         for (var k=1; k <= maxN; k++) {
             numRefNgrams[k] += k <= refWords.length ? refWords.length - k + 1: 0;
         }
@@ -209,7 +209,7 @@ function scoreSegment(docid, segnum, tstSegment, refSegments, docBleuObj, sConta
     }
 
     // Compute the representative reference length whether "shortest" or "closest"
-	if (reflengths.length == 1) { 
+	if (reflengths.length == 1) {
 		segBleuObj.reflength = reflengths[0];
 	}
     else if  (reflenMethod == "shortest") {
@@ -231,14 +231,14 @@ function scoreSegment(docid, segnum, tstSegment, refSegments, docBleuObj, sConta
 
     // Compute the bleu score for this segment and save it
     segscore = segBleuObj.computeBLEU();
-		
+
     //sContainer.segmentScores[docid][segnum] = segscore;
     var o = {};
     o.segnum = segnum;
     o.docid = docid;
     o.score = segscore;
     sContainer.segmentScores.push(o);
-    
+
     // Update the docBleuObj with the segBleuObj and delete the segBleuObj
     docBleuObj.update(segBleuObj);
     segBleuObj = null;
@@ -254,8 +254,8 @@ function scoreDocument(docid, tstDoc, refDocs, sysBleuObj, sContainer) {
     // initialize the scoreContainer for this document
     sContainer.documentScores[docid] = 0.0;
     //sContainer.segmentScores[docid] = [];
-        
-    // go over each segment from the test document and all corresponding ref segments 
+
+    // go over each segment from the test document and all corresponding ref segments
     for (var segnum=0; segnum<tstDoc.length; segnum++) {
         var tstSeg = tstDoc[segnum];
         var refSegs = refDocs.map(function(rdoc) { return rdoc[segnum]; });
