@@ -1,6 +1,6 @@
 // This file implements the Hirschberg algorithm for computing the longest common
-// subsequence (LCS) between two strings. 
-// Adapted from http://wordaligned.org/articles/longest-common-subsequence 
+// subsequence (LCS) between two strings.
+// Adapted from http://wordaligned.org/articles/longest-common-subsequence
 // Nitin Madnani, July 2011
 
 // A Cell data structure for convenience
@@ -9,7 +9,7 @@ function Cell(l, m) {
     this.move = m;
 }
 
-/*    
+/*
     Create a grid for longest common subsequence calculations.
 
     Returns a grid where grid[(j, i)] is a pair (n, move) such that
@@ -68,12 +68,12 @@ function lcs(xs, ys) {
     var grid = lcs_grid(xs, ys);
 
     // Create an object that will hold the LCS information
-    var lcslist = new Object();
-    lcslist.xindices = new Array();
-    lcslist.yindices = new Array();
+    var lcslist = {};
+    lcslist.xindices = [];
+    lcslist.yindices = [];
     // lcslist.words = new Array();
 
-    // Walk back from the bottom right corner of the grid 
+    // Walk back from the bottom right corner of the grid
     // and store information into the LCS object
     var i = xs.length;
     var j = ys.length;

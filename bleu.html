@@ -214,16 +214,17 @@ function showSegDetails(event) {
   // and when there are two systems, then between the the hyps
   if (tstSets[1] != undefined) {
     var lcslist;
-    var tokhyp1 = tstSets[0].documents[docid][segnum]
-    var tokhyp2 = tstSets[1].documents[docid][segnum];
+    var tokhyp1 = $('#tokenizeCheckBox').attr('checked') ? tstSets[0].untokenizedDocuments[docid][segnum] : tstSets[0].documents[docid][segnum];
+    var tokhyp2 = $('#tokenizeCheckBox').attr('checked') ? tstSets[1].untokenizedDocuments[docid][segnum] : tstSets[1].documents[docid][segnum];
     lcslist = lcs(tokhyp1.split(' '), tokhyp2.split(' '));
   }
   else {
     var hypLCSList = [];
     var refLCSLists = [];
-    var tokhyp = tstSets[0].documents[docid][segnum];
+    // var tokhyp = tstSets[0].documents[docid][segnum];
+    var tokhyp = $('#tokenizeCheckBox').attr('checked') ? tstSets[0].untokenizedDocuments[docid][segnum] : tstSets[0].documents[docid][segnum];
     for (var i=0; i<refSets.length; i++) {
-      var tokref = refSets[i].documents[docid][segnum];
+      var tokref = $('#tokenizeCheckBox').attr('checked') ? refSets[i].untokenizedDocuments[docid][segnum] : refSets[i].documents[docid][segnum];
       var lcslist = lcs(tokhyp.split(' '), tokref.split(' '));
       hypLCSList.push.apply(hypLCSList, lcslist.xindices);
       refLCSLists.push(lcslist.yindices);
@@ -259,23 +260,23 @@ function showSegDetails(event) {
 
     // Add all the references
     for(var i=0; i < refSets.length; i++) {
-    if (tstSets[1] != undefined) {
-      var ref = refSets[i].untokenizedDocuments[docid][segnum];
-      ref = $('#caseCheckBox').attr('checked') ? ref : ref.toLowerCase();
-      tablehtml += '<tr>' +
-                 '<td align="center" id="segDetailHeader">Reference<br/>(' + refSets[i].refid + ')</td>' +
-                 '<td id="segDetailRef' + i + '">' + ref + '</td>' +
-                   '</tr>';
-    }
-    else {
-      var tokref = refSets[i].documents[docid][segnum];
-      tokref = $('#caseCheckBox').attr('checked') ? tokref : tokref.toLowerCase();
-      ref_html = lcsColorize(tokref, refLCSLists[i], '#CC3333');
-      tablehtml += '<tr>' +
-                 '<td align="center" id="segDetailHeader">Reference<br/>(' + refSets[i].refid + ')</td>' +
-                 '<td id="segDetailRef' + i + '">' + ref_html + '</td>' +
-                   '</tr>';
-    }
+      if (tstSets[1] != undefined) {
+        var ref = $('#tokenizeCheckBox').attr('checked') ? refSets[i].untokenizedDocuments[docid][segnum] : refSets[i].documents[docid][segnum];
+        ref = $('#caseCheckBox').attr('checked') ? ref : ref.toLowerCase();
+        tablehtml += '<tr>' +
+                   '<td align="center" id="segDetailHeader">Reference<br/>(' + refSets[i].refid + ')</td>' +
+                   '<td id="segDetailRef' + i + '">' + ref + '</td>' +
+                     '</tr>';
+      }
+      else {
+        var tokref = $('#tokenizeCheckBox').attr('checked') ? refSets[i].untokenizedDocuments[docid][segnum] : refSets[i].documents[docid][segnum];
+        tokref = $('#caseCheckBox').attr('checked') ? tokref : tokref.toLowerCase();
+        ref_html = lcsColorize(tokref, refLCSLists[i], '#CC3333');
+        tablehtml += '<tr>' +
+                   '<td align="center" id="segDetailHeader">Reference<br/>(' + refSets[i].refid + ')</td>' +
+                   '<td id="segDetailRef' + i + '">' + ref_html + '</td>' +
+                     '</tr>';
+      }
     }
 
     // Add the hypothesis or hypotheses as the case may be
@@ -296,7 +297,7 @@ function showSegDetails(event) {
                  '</tr>';
     }
     else {
-        var hyp = tstSets[0].untokenizedDocuments[docid][segnum];
+        var hyp = $('#tokenizeCheckBox').attr('checked') ? tstSets[0].untokenizedDocuments[docid][segnum] : tstSets[0].documents[docid][segnum];
         tokhyp = $('#caseCheckBox').attr('checked') ? tokhyp : tokhyp.toLowerCase();
         hyp_html = lcsColorize(tokhyp, hypLCSList, '#CC3333');
         tablehtml += '<tr>' +
@@ -698,7 +699,7 @@ $(document).ready(function() {
                   var segs = [];
                   $(this).find("seg").each(function (seg) {
                     //var segid = $(this).attr("id");
-                    segs.push($(this).text());
+                    segs.push($(this).text().trim());
                     // segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
                   });
                   srcSet.documents[docid] = segs;
@@ -718,7 +719,7 @@ $(document).ready(function() {
                 var segs = [];
                 var originalSegs = txt.split('\n').slice(0, -1);
                 for (var i=0; i < originalSegs.length; i++) {
-                    segs.push(originalSegs[i]);
+                    segs.push(originalSegs[i].trim());
                 }
                 srcSet.documents[docid] = segs;
             }
@@ -760,12 +761,12 @@ $(document).ready(function() {
                     $(this).find("seg").each(function (seg) {
                       //var segid = $(this).attr("id");
                       if ($('#tokenizeCheckBox').attr('checked')) {
-                        segs.push($(this).text());
+                        segs.push($(this).text().trim());
                       }
                       else {
-                        segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
+                        segs.push(tokenize($(this).text().trim(), $('#caseCheckBox').attr('checked')));
                       }
-                      originalSegs.push($(this).text());
+                      originalSegs.push($(this).text().trim());
                     });
                     tstSet.documents[docid] = segs;
                     tstSet.untokenizedDocuments[docid] = originalSegs;
@@ -783,10 +784,10 @@ $(document).ready(function() {
                 var originalSegs = txt.split('\n').slice(0, -1);
                 for (var i=0; i < originalSegs.length; i++) {
                   if ($('#tokenizeCheckBox').attr('checked')) {
-                    segs.push(originalSegs[i]);
+                    segs.push(originalSegs[i].trim());
                   }
                   else {
-                    segs.push(tokenize(originalSegs[i], $('#caseCheckBox').attr('checked')));
+                    segs.push(tokenize(originalSegs[i].trim(), $('#caseCheckBox').attr('checked')));
                   }
                 }
                 tstSet.documents[docid] = segs;
@@ -822,11 +823,12 @@ $(document).ready(function() {
                     $(this).find("seg").each(function (seg) {
                       //var segid = $(this).attr("id");
                       if ($('#tokenizeCheckBox').attr('checked')) {
-                        segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
+                        segs.push($(this).text().trim());
                       }
                       else {
-                        segs.push($(this).text());
+                        segs.push(tokenize($(this).text().trim(), $('#caseCheckBox').attr('checked')));
                       }
+                      originalSegs.push($(this).text().trim());
                     });
                     tstSet.documents[docid] = segs;
                     tstSet.untokenizedDocuments[docid] = originalSegs;
@@ -844,10 +846,10 @@ $(document).ready(function() {
                 var originalSegs = txt.split('\n').slice(0, -1);
                 for (var i=0; i < originalSegs.length; i++) {
                   if ($('#tokenizeCheckBox').attr('checked')) {
-                    segs.push(originalSegs[i]);
+                    segs.push(originalSegs[i].trim());
                   }
                   else {
-                    segs.push(tokenize(originalSegs[i], $('#caseCheckBox').attr('checked')));
+                    segs.push(tokenize(originalSegs[i].trim(), $('#caseCheckBox').attr('checked')));
                   }
                 }
                 tstSet.documents[docid] = segs;
@@ -890,12 +892,12 @@ $(document).ready(function() {
                         $(this).find("seg").each(function(seg) {
                           //var segid = $(this).attr("id");
                           if ($('#tokenizeCheckBox').attr('checked')) {
-                            segs.push($(this).text());
+                            segs.push($(this).text().trim());
                           }
                           else {
-                            segs.push(tokenize($(this).text(), $('#caseCheckBox').attr('checked')));
+                            segs.push(tokenize($(this).text().trim(), $('#caseCheckBox').attr('checked')));
                           }
-                          originalSegs.push($(this).text());
+                          originalSegs.push($(this).text().trim());
                         });
                         rset.documents[docid] = segs;
                         rset.untokenizedDocuments[docid] = originalSegs;
@@ -915,10 +917,10 @@ $(document).ready(function() {
                 var originalSegs = txt.split('\n').slice(0, -1);
                 for (var i=0; i < originalSegs.length; i++) {
                   if ($('#tokenizeCheckBox').attr('checked')) {
-                    segs.push(originalSegs[i]);
+                    segs.push(originalSegs[i].trim());
                   }
                   else {
-                    segs.push(tokenize(originalSegs[i], $('#caseCheckBox').attr('checked')));
+                    segs.push(tokenize(originalSegs[i].trim(), $('#caseCheckBox').attr('checked')));
                   }
                 }
                 rset.documents[docid] = segs;

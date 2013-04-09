@@ -2,7 +2,7 @@
 reserved_words = ['watch', 'constructor'];
 
 // Utility function that modifies words that are in the above reserved word list
-function makeSafe(ngram) { 
+function makeSafe(ngram) {
 	return ngram in reserved_words ? '#' + ngram + '#' : ngram;
 }
 
@@ -11,8 +11,8 @@ function floatingRound(num) {
 }
 
 // Utility functions for finding all negative and positive numbers
-findNegatives = function(x) { return x < 0;}
-findPositives = function(x) { return x >= 0;}
+findNegatives = function(x) { return x < 0; };
+findPositives = function(x) { return x >= 0; };
 
 // Find the optimal y-axis limits for displaying a set of BLEU score differences
 function findSymmetricYAxisLimits(segmentDiffsArray) {
@@ -37,7 +37,7 @@ jQuery.fn.compare = function(other) {
     var a = this.sort(),
         b = other.sort();
     for (var i = 0; other[i]; i++) {
-        if (a[i] !== b[i]) { 
+        if (a[i] !== b[i]) {
             return false;
         }
     }
@@ -45,13 +45,13 @@ jQuery.fn.compare = function(other) {
 };
 
 // Utility function to get all keys for a hash
-keys = function(o) { return [p for (p in o)]; }
+keys = function(o) { return [ p for (p in o) ]; };
 
 // Utility function to check whether two hashes are equal
-function hashequal(me, other) { 
+function hashequal(me, other) {
     if (!$(keys(me)).compare(keys(other))) { return false; }
-    for (key in me) {
-        if (me[key] != other[key]) { 
+    for (var key in me) {
+        if (me[key] != other[key]) {
             return false;
         }
     }
@@ -70,17 +70,17 @@ function validateTstAndRefs(tstSet, refSets) {
     // AND
     // number of segments are the same in each document in all the sets?
     var tstSegNums = {};
-    for (docid in tstSet.documents) { tstSegNums[docid] = tstSet.documents[docid].length; }
+    for (var docid in tstSet.documents) { tstSegNums[docid] = tstSet.documents[docid].length; }
     var refSegNumsArray = [];
-    for (var i=0; i<refSets.length; i++) { 
+    for (var i=0; i<refSets.length; i++) {
         var refSegNums = {};
         var rset = refSets[i];
-        for (docid in rset.documents) { 
+        for (docid in rset.documents) {
             refSegNums[docid] = rset.documents[docid].length;
         }
         refSegNumsArray.push(refSegNums);
     }
-    var cond2 = refSegNumsArray.map(function(rsn) { return hashequal(rsn, tstSegNums); }).reduce(function(b1, b2) { return b1 && b2; })
+    var cond2 = refSegNumsArray.map(function(rsn) { return hashequal(rsn, tstSegNums); }).reduce(function(b1, b2) { return b1 && b2; });
 
     return cond1 && cond2;
 }
@@ -97,11 +97,11 @@ function validateTstAndSrc(tstSet, srcSet) {
     // AND
     // number of segments are the same in each document in both sets?
     var tstSegNums = {};
-    for (docid in tstSet.documents) { tstSegNums[docid] = tstSet.documents[docid].length; }
+    for (var docid in tstSet.documents) { tstSegNums[docid] = tstSet.documents[docid].length; }
     var srcSegNums = {};
-    for (docid in srcSet.documents) { srcSegNums[docid] = srcSet.documents[docid].length; }
+    for (var docid in srcSet.documents) { srcSegNums[docid] = srcSet.documents[docid].length; }
 	var cond2 = hashequal(srcSegNums, tstSegNums);
- 
+
     return cond1 && cond2;
 }
 
@@ -117,16 +117,16 @@ function validateTstAndOtherTst(tstSet1, tstSet2) {
 	var tstSetSysId1 = tstSet1.sysid;
 	var tstSetSysId2 = tstSet2.sysid;
 	var cond2 = tstSetSysId1 != tstSetSysId2;
-	
+
     // document ids are the same in both test sets?
     // AND
     // number of segments are the same in each document in both sets?
     var tstSegNums1 = {};
-    for (docid in tstSet1.documents) { tstSegNums1[docid] = tstSet1.documents[docid].length; }
+    for (var docid in tstSet1.documents) { tstSegNums1[docid] = tstSet1.documents[docid].length; }
     var tstSegNums2 = {};
-    for (docid in tstSet2.documents) { tstSegNums2[docid] = tstSet2.documents[docid].length; }
+    for (var docid in tstSet2.documents) { tstSegNums2[docid] = tstSet2.documents[docid].length; }
 	var cond3 = hashequal(tstSegNums1, tstSegNums2);
- 
+
     return cond1 && cond2 && cond3;
 }
 
