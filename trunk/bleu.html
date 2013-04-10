@@ -11,7 +11,7 @@
 <script src="js/utils.js" type="text/javascript"></script>
 <script src="js/lcs.js" type="text/javascript"></script>
 <script src="js/highcharts.js" type="text/javascript"></script>
-<script src="js/highcharts.theme.gray.js" type="text/javascript"></script>
+<script src="js/gray.js" type="text/javascript"></script>
 
 </head>
 
@@ -203,11 +203,9 @@ function showSegDetails(event) {
 
   // Compute the length ratio of the segment length to the average reference length
   var lenratio = lengths[0]/avgreflen;
-
   $('#segDetailContainer').show();
-
-    var elt = document.getElementById('segDetailContainer');
-    var reflens = lengths.slice(1);
+  var elt = document.getElementById('segDetailContainer');
+  var reflens = lengths.slice(1);
 
   // Compute the longest common subsequence (LCS) between the appropriate
   // items: when there is a single system, then between the hyp and the ref(s)
@@ -972,21 +970,21 @@ $(document).ready(function() {
             }
 
       // clear everything else
-            $('#bleuSegPlot').html("");
-            $('#bleuDocPlotsContainer').html("");
-        $('#bleuDocPlotsContainer').hide();
-        $('#bleuSegPlotContainer').hide();
-          $('#segDetailContainer').html("");
+      $('#bleuSegPlot').html("");
+      $('#bleuDocPlotsContainer').html("");
+      $('#bleuDocPlotsContainer').hide();
+      $('#bleuSegPlotContainer').hide();
+      $('#segDetailContainer').html("");
       allDocPlots = [];
 
-            var scores = [];
-            var brevities = [];
-            var precisions = [];
-            var sysids = [];
-            var srclang = srcSets.length > 0 ? srcSets[0].srclang : undefined;
+      var scores = [];
+      var brevities = [];
+      var precisions = [];
+      var sysids = [];
+      var srclang = srcSets.length > 0 ? srcSets[0].srclang : undefined;
 
       // Compute the bleu scores for the first system ...
-        scontainer = scoreSystem(tstSets[0], refSets);
+      scontainer = scoreSystem(tstSets[0], refSets);
       for (sysid in scontainer.bleuObjects) {
         var bo = scontainer.bleuObjects[sysid];
           scores.push(bo.computeBLEU());
