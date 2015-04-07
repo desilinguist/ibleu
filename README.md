@@ -2,7 +2,7 @@
 A visual and interactive scoring environment for machine translation systems.
 
 
-##### NOTE: Requires the latest version of Firefox (v4 or higher at least)* 
+##### NOTE: Requires the latest version of Firefox (v4 or higher at least)
 
 ## Introduction
 
@@ -47,7 +47,7 @@ the simplest to implement. This tool contains a pure Javascript implementation o
 BLEU metric (based on the NIST mteval script v13a). Porting BLEU to Javascript was really 
 pretty easy given how mature the language has become.
 
-#### What do all the numbers mean ?
+#### What do all the numbers mean?
 In short: the BLEU score for a set of translations translation is 
 defined as the product of two numbers --- an n-gram precision score (what percentage of the n-grams 
 or phrases from the translations also appear in the reference translations) and a 
@@ -64,7 +64,7 @@ However, if you want to use multiple reference translations, you need to use the
 there is no way to specify multiple reference translations using TXT files. For more details, 
 please refer to the [BLEU Wikipedia page](http://en.wikipedia.org/wiki/BLEU).
 
-#### What is the format for the XML files?*
+#### What is the format for the XML files?
 The format is the official NIST XML format as described in this [DTD](ftp://jaguar.ncsl.nist.gov/mt/resources/mteval-xml-v1.5.dtd). Please make sure that the XML files you are using are valid XML and compliant with this DTD. 
 This DTD is also included with the official release download zip file. 
 
