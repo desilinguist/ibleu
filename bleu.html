@@ -7,7 +7,6 @@
 <title>iBLEU: Interactive BLEU Scoring</title>
 <script src="js/bleu.js" type="text/javascript"></script>
 <script src="js/jquery.js" type="text/javascript"></script>
-<script src="js/jquery.flot.js" type="text/javascript"></script>
 <script src="js/utils.js" type="text/javascript"></script>
 <script src="js/lcs.js" type="text/javascript"></script>
 <script src="js/highcharts.js" type="text/javascript"></script>
@@ -318,7 +317,7 @@ function showSegDetails(event) {
 
   $('html, body').animate({
     scrollTop: $("#segDetailContainer").offset().top
-  }, 1000);
+  }, 500);
 }
 
 
@@ -402,6 +401,7 @@ function makeColumnChart(plotdiv, yscores, xticks, label, smallOrBig, ymin, ymax
         pointwidth = 2;
         clickCallback = { click: showLargerPlot };
         showXTicks = false;
+        showXLabels = false;
         YTickInterval = 0.5;
         XTickWidth = 0;
         pointClickCallback = { legendItemClick : function(event) { return false; }, };
@@ -413,15 +413,12 @@ function makeColumnChart(plotdiv, yscores, xticks, label, smallOrBig, ymin, ymax
         showAnimation = true;
         pointwidth = null;
         clickCallback = { };
-        showXTicks = true;
+        showXTicks = false;
+        showXLabels = true;
         YTickInterval = 0.2;
-        XTickWidth = null;
+        XTickWidth = 0;
         pointClickCallback = { legendItemClick : function(event) { return false; }, click : showSegDetails};
         pointCursor = 'pointer';
-    }
-
-    if (yscores.length > 35) {
-      showXTicks = false;
     }
 
     chart = new Highcharts.Chart({
@@ -439,7 +436,7 @@ function makeColumnChart(plotdiv, yscores, xticks, label, smallOrBig, ymin, ymax
             tickWidth: XTickWidth,
             categories: xticks,
             labels: {
-                enabled: showXTicks
+                enabled: showXLabels
             }
         },
         yAxis: {
@@ -457,11 +454,6 @@ function makeColumnChart(plotdiv, yscores, xticks, label, smallOrBig, ymin, ymax
             }
         },
         legend: {
-            // align: 'right',
-            // verticalAlign: 'top',
-            // x: 0,
-            // y: 10,
-            // floating: true,
             enabled: showLegend
         },
         plotOptions: {
@@ -629,7 +621,7 @@ function showLargerPlot(event) {
     $('#segDetailContainer').html("");
     $('html, body').animate({
         scrollTop: $("#bleuSegPlotContainer").offset().top
-    }, 1000);
+    }, 500);
 
 }
 
@@ -654,15 +646,11 @@ $(document).ready(function() {
     $('#bleuScoreDiv').html("");
     $('#bleuTableDiv').html("");
     $('bleuDetailContainer').hide();
-    //$('#bleuDetailContainer').css('border','none');
 
     // Hide the bleu plots
     $('#bleuSegPlot').html("");
     $('#bleuDocPlotsContainer').hide();
     $('#bleuSegPlotContainer').hide();
-
-    // Clear any stray tooltips
-    // $("#tooltip").remove();
 
     // Hide any segment details
     $('#segDetailContainer').html("");
@@ -969,31 +957,31 @@ $(document).ready(function() {
                 }
             }
 
-      // clear everything else
-      $('#bleuSegPlot').html("");
-      $('#bleuDocPlotsContainer').html("");
-      $('#bleuDocPlotsContainer').hide();
-      $('#bleuSegPlotContainer').hide();
-      $('#segDetailContainer').html("");
-      allDocPlots = [];
+            // clear everything else
+            $('#bleuSegPlot').html("");
+            $('#bleuDocPlotsContainer').html("");
+            $('#bleuDocPlotsContainer').hide();
+            $('#bleuSegPlotContainer').hide();
+            $('#segDetailContainer').html("");
+            allDocPlots = [];
 
-      var scores = [];
-      var brevities = [];
-      var precisions = [];
-      var sysids = [];
-      var srclang = srcSets.length > 0 ? srcSets[0].srclang : undefined;
+            var scores = [];
+            var brevities = [];
+            var precisions = [];
+            var sysids = [];
+            var srclang = srcSets.length > 0 ? srcSets[0].srclang : undefined;
 
-      // Compute the bleu scores for the first system ...
-      scontainer = scoreSystem(tstSets[0], refSets);
-      for (sysid in scontainer.bleuObjects) {
-        var bo = scontainer.bleuObjects[sysid];
-          scores.push(bo.computeBLEU());
-          brevities.push(bo.brevity);
-          precisions.push(bo.precisions[4]);
-          sysids.push(sysid);
-      }
+            // Compute the bleu scores for the first system ...
+            scontainer = scoreSystem(tstSets[0], refSets);
+            for (sysid in scontainer.bleuObjects) {
+            var bo = scontainer.bleuObjects[sysid];
+                scores.push(bo.computeBLEU());
+                brevities.push(bo.brevity);
+                precisions.push(bo.precisions[4]);
+                sysids.push(sysid);
+            }
 
-        // .. and the second system, if available
+            // .. and the second system, if available
             if (tstSets[1] != undefined) {
                 scontainer2 = scoreSystem(tstSets[1], refSets);
                 for (sysid in scontainer2.bleuObjects) {
@@ -1004,7 +992,6 @@ $(document).ready(function() {
                     sysids.push(sysid);
                 }
             }
-
 
             // Show BLEU details (with details table hidden) if there is
             // only one system but if there are two, then show the scores
@@ -1017,7 +1004,7 @@ $(document).ready(function() {
             else {
                 showScore(scores[0], precisions[0], brevities[0], sysids[0], srclang, refSets.length);
                 showTable(bo.individualNgramScores, bo.cumulativeNgramScores);
-                $('#bleuTable').find('tbody').css('display', 'none');
+                $('#bleuTable').hide();
                 $('#bleuDetailContainer').css('border', '1px solid');
             }
 
@@ -1053,13 +1040,13 @@ $(document).ready(function() {
 
                 var seriesLabel;
                 var plotLabel;
-                        var idLabel;
+                var idLabel;
 
                 // Make all the document plots
                 for (var i=0; i < numDocuments; i++) {
 
-                        // Create a label for the plot
-                        idLabel = ("00" + i).slice(-3); // pad with two leading zeros
+                    // Create a label for the plot
+                    idLabel = ("00" + i).slice(-3); // pad with two leading zeros
 
                     // render the plot placeholder
                     $('#bleuDocPlotsContainer').append('<div class="docplot" id="docPlot' + idLabel + '" style="width:200px; height:100px; display:inline-block; margin: 10px; white-space:nowrap;"</div>');
@@ -1073,7 +1060,7 @@ $(document).ready(function() {
 
                     // Create a non-legend label for the plot
                     plotLabel = 'Document ' + (i+1) + ' (' + docPlotLabels[i][1] + ')';
-                        idLabel = ("00" + i).slice(-3); // pad with two leading zeros
+                    idLabel = ("00" + i).slice(-3); // pad with two leading zeros
                     $('#docPlot' + idLabel).append('<span id="docPlotLabel' + i + '" style="font-size: 11px; margin: 0px auto;">' + plotLabel + '</span>');
                 }
             }
@@ -1130,9 +1117,9 @@ $(document).ready(function() {
             $(this).html('Hide Form');
         }
     });
-    $('a#tableHider').live('click', function(e) {
+    $('body').on('click', 'a#tableHider', function(e) {
         e.preventDefault();
-        $('#bleuTable').find('tbody').toggle();
+        $('#bleuTable').toggle();
         if ($(this).html() == 'Show') {
             $(this).html('Hide');
         }
@@ -1141,7 +1128,7 @@ $(document).ready(function() {
         }
     });
 
-      $('a#engineTranslate').live('click', function(e) {
+      $('body').on('click', 'a#engineTranslate', function(e) {
         e.preventDefault();
         var engineName = $('input[name=comparisonEngine]:checked').val();
         if (engineName == "Google") {
@@ -1170,7 +1157,7 @@ $(document).ready(function() {
         }
         $('html, body').animate({
             scrollTop: $("tr#segDetailEngine").offset().top
-        }, 1000);
+        }, 500);
     });
 });
 </script>

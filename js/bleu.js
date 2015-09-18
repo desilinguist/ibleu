@@ -157,7 +157,9 @@ function Words2Ngrams(words) {
                 ngram_counts[ngram]++;
             }
             else {
-				if (ngram == "watch") { alert(ngram); }
+				if (ngram == "watch") {
+                    alert(ngram);
+                }
                 ngram_counts[ngram] = 1;
             }
         }

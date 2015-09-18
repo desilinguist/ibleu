@@ -3,7 +3,11 @@ reserved_words = ['watch', 'constructor'];
 
 // Utility function that modifies words that are in the above reserved word list
 function makeSafe(ngram) {
-	return ngram in reserved_words ? '#' + ngram + '#' : ngram;
+    var ans = ngram;
+    if (reserved_words.indexOf(ngram) !== -1) {
+        ans = '#' + ngram + '#';
+    }
+	return ans
 }
 
 function floatingRound(num) {
