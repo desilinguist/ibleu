@@ -646,15 +646,11 @@ $(document).ready(function() {
     $('#bleuScoreDiv').html("");
     $('#bleuTableDiv').html("");
     $('bleuDetailContainer').hide();
-    //$('#bleuDetailContainer').css('border','none');
 
     // Hide the bleu plots
     $('#bleuSegPlot').html("");
     $('#bleuDocPlotsContainer').hide();
     $('#bleuSegPlotContainer').hide();
-
-    // Clear any stray tooltips
-    // $("#tooltip").remove();
 
     // Hide any segment details
     $('#segDetailContainer').html("");
@@ -961,31 +957,31 @@ $(document).ready(function() {
                 }
             }
 
-      // clear everything else
-      $('#bleuSegPlot').html("");
-      $('#bleuDocPlotsContainer').html("");
-      $('#bleuDocPlotsContainer').hide();
-      $('#bleuSegPlotContainer').hide();
-      $('#segDetailContainer').html("");
-      allDocPlots = [];
+            // clear everything else
+            $('#bleuSegPlot').html("");
+            $('#bleuDocPlotsContainer').html("");
+            $('#bleuDocPlotsContainer').hide();
+            $('#bleuSegPlotContainer').hide();
+            $('#segDetailContainer').html("");
+            allDocPlots = [];
 
-      var scores = [];
-      var brevities = [];
-      var precisions = [];
-      var sysids = [];
-      var srclang = srcSets.length > 0 ? srcSets[0].srclang : undefined;
+            var scores = [];
+            var brevities = [];
+            var precisions = [];
+            var sysids = [];
+            var srclang = srcSets.length > 0 ? srcSets[0].srclang : undefined;
 
-      // Compute the bleu scores for the first system ...
-      scontainer = scoreSystem(tstSets[0], refSets);
-      for (sysid in scontainer.bleuObjects) {
-        var bo = scontainer.bleuObjects[sysid];
-          scores.push(bo.computeBLEU());
-          brevities.push(bo.brevity);
-          precisions.push(bo.precisions[4]);
-          sysids.push(sysid);
-      }
+            // Compute the bleu scores for the first system ...
+            scontainer = scoreSystem(tstSets[0], refSets);
+            for (sysid in scontainer.bleuObjects) {
+            var bo = scontainer.bleuObjects[sysid];
+                scores.push(bo.computeBLEU());
+                brevities.push(bo.brevity);
+                precisions.push(bo.precisions[4]);
+                sysids.push(sysid);
+            }
 
-        // .. and the second system, if available
+            // .. and the second system, if available
             if (tstSets[1] != undefined) {
                 scontainer2 = scoreSystem(tstSets[1], refSets);
                 for (sysid in scontainer2.bleuObjects) {
@@ -996,7 +992,6 @@ $(document).ready(function() {
                     sysids.push(sysid);
                 }
             }
-
 
             // Show BLEU details (with details table hidden) if there is
             // only one system but if there are two, then show the scores
@@ -1045,13 +1040,13 @@ $(document).ready(function() {
 
                 var seriesLabel;
                 var plotLabel;
-                        var idLabel;
+                var idLabel;
 
                 // Make all the document plots
                 for (var i=0; i < numDocuments; i++) {
 
-                        // Create a label for the plot
-                        idLabel = ("00" + i).slice(-3); // pad with two leading zeros
+                    // Create a label for the plot
+                    idLabel = ("00" + i).slice(-3); // pad with two leading zeros
 
                     // render the plot placeholder
                     $('#bleuDocPlotsContainer').append('<div class="docplot" id="docPlot' + idLabel + '" style="width:200px; height:100px; display:inline-block; margin: 10px; white-space:nowrap;"</div>');
@@ -1065,7 +1060,7 @@ $(document).ready(function() {
 
                     // Create a non-legend label for the plot
                     plotLabel = 'Document ' + (i+1) + ' (' + docPlotLabels[i][1] + ')';
-                        idLabel = ("00" + i).slice(-3); // pad with two leading zeros
+                    idLabel = ("00" + i).slice(-3); // pad with two leading zeros
                     $('#docPlot' + idLabel).append('<span id="docPlotLabel' + i + '" style="font-size: 11px; margin: 0px auto;">' + plotLabel + '</span>');
                 }
             }
