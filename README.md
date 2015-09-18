@@ -9,7 +9,7 @@ Currently, research in machine translation is evaluated by scoring the output of
 
 iBLEU allows exploring the output of a single system as well as comparing the outputs from two different sytems. It also allows users to query Google Translate or Bing Translator for comparison.
 
-Since the tool relies on the latest version of the web technologies (Javascript v1.8, HTML5 and CSS3), you must use a browser that supports all of these technologies. Currently, the best option is the latest release of [Mozilla Firefox](http://www.getfirefox.com) (v4 or higher; latest version recommended).
+Since the tool relies on the latest version of the web technologies (Javascript, HTML5 and CSS3), you must use a browser that supports all of these technologies. Currently, the best option is the latest release of [Google Chrome] (v45+; latest version recommended).
 
 ## How to use it?
 
