@@ -42,7 +42,7 @@ table#bleuTable caption {
     font-size: 14px;
 }
 
-div.hider { 
+div.hider {
     font-size: 12px;
     text-align: right;
     margin: 4px;
@@ -65,10 +65,12 @@ td#segDetailHeader {
 
 td#segDetailID, td#segDetailRef0, td#segDetailRef1, td#segDetailRef2, td#segDetailRef3, td#segDetailHyp, td#segDetailSrc, td#segDetailEngineTrans {
 	font-size: 14px;
-    font-family: consolas, courier, fixed, monospace;	
+    font-family: consolas, courier, fixed, monospace;
 	text-align: left;
 	padding: 5px;
 }
 
-a.jslink:visited { color: #0000FF;}
+a.jslink:visited {
+    color: #0000FF;
+}
 
