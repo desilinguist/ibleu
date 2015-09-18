@@ -1,8 +1,7 @@
 # ibleu
 A visual and interactive scoring environment for machine translation systems.
 
-
-##### NOTE: Requires the latest version of Firefox (v4 or higher at least)
+##### NOTE: Currently requires the latest version of Chrome (v45+). 
 
 ## Introduction
 
@@ -91,16 +90,12 @@ on your end. To prevent tokenization, you can check the 'Do not tokenize' checkb
 **NOTE**: this may lead to BLEU scores that are different from those produced by the 
 official BLEU script since you are no longer using the default bleu tokenization. 
 
-#### Why only Mozilla Firefox and only the latest version?
-This tool relies on the latest versions of HTML (HTML5), Javascript (v1.8) and CSS (CSS2/CSS3) 
-and Firefox currently provides the best implementation of these technologies on all three major 
-platforms (Mac, Windows and Linux).
+#### Why only Google Chrome and only the latest version?
+This tool relies on the latest standards for HTML, Javascript and CSS and Chrome currently provides the best implementation of these technologies on all three major platforms (Mac, Windows and Linux). The tool might also work on Firefox (and older versions certainly used to) but I have been having issues with the recent versions of Firefox (v40 and higher) on OS X, for some reason. So, Google Chrome is recommended. Please file an issue if you have problems with Chrome.
 
 #### What third party libraries is ibleu using?
-I used two third party libraries for this project. The first is [jquery](http://jquery.com/), a fantastic 
-Javascript library that makes interacting with the DOM extremely easy. The second is [highcharts](http://www.highcharts.com), 
-a very powerful charting/graphic library that works with query. For older versions of iBLEU, I was using 
-[flot](http://flot.googlecode.com), a different charting library but was not as nice as high charts. 
+I used two third party libraries for this project. The first is [jquery](http://jquery.com/), a fantastic Javascript library that makes interacting with the DOM extremely easy. The second is [highcharts](http://www.highcharts.com), 
+a very powerful charting/graphic library that works with query. For older versions of iBLEU, I was using [flot](http://flot.googlecode.com), a different charting library but was not as nice as high charts. 
 
 #### Why use Google Translate and/or Bing Translator?
 Google and Bing currently have the best *publicly available* statistical machine translation systems and so it's only natural to want to compare against them as a benchmark. Obviously, the publicly available translation systems may be different from the respective research translation system that folks in the MT community are generally familiar with but they are useful benchmarks nonetheless. 
