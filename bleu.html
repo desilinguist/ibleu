@@ -1010,7 +1010,7 @@ $(document).ready(function() {
 
             // build the doc plot strip of plots if there is more
             // than one document otherwise we don't need to
-            var numDocuments = keys(scontainer.documentScores).length;
+            var numDocuments = Object.keys(scontainer.documentScores).length;
             if ( numDocuments > 0) {
 
                 // Set the height and width for the container

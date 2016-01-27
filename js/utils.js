@@ -48,16 +48,10 @@ jQuery.fn.compare = function(other) {
     return true;
 };
 
-// Utility function to get all keys for a hash
-keys = function(o) {
-    var ret=[],p;
-    for(p in o) if(Object.prototype.hasOwnProperty.call(o,p)) ret.push(p);
-    return ret;
-};
 
 // Utility function to check whether two hashes are equal
 function hashequal(me, other) {
-    if (!$(keys(me)).compare(keys(other))) { return false; }
+    if (!$(Object.keys(me)).compare(Object.keys(other))) { return false; }
     for (var key in me) {
         if (me[key] != other[key]) {
             return false;
